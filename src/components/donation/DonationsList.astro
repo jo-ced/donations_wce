@@ -1,0 +1,44 @@
+---
+import Label from '../Label.astro';
+import DonorRow from './DonorRow.astro';
+
+interface Props {
+  donors: { name: string; amount: number; anonymous: boolean }[];
+  donorCount: number;
+  currency: string;
+  disclaimer: string;
+}
+
+const { donors, donorCount, currency, disclaimer } = Astro.props;
+const visibleDonors = donors.filter(d => !d.anonymous);
+const topDonors = [...visibleDonors].sort((a, b) => b.amount - a.amount);
+---
+
+<section class="px-5 py-4 border-b border-border" x-data="{ activeTab: 'Alle' }">
+  <div class="flex justify-between items-center">
+    <Label>Spenden &middot; {donorCount}</Label>
+    <div class="flex gap-1">
+      <template x-for="tab in ['Alle', 'Top']">
+        <button
+          x-text="tab"
+          @click="activeTab = tab"
+          :class="activeTab === tab ? 'bg-accent text-white' : 'bg-transparent text-text-light'"
+          class="px-2.5 py-1 rounded-[6px] border-none text-[10px] font-semibold cursor-pointer capitalize"
+        ></button>
+      </template>
+    </div>
+  </div>
+  <span class="text-[10px] text-text-light italic block mb-1">
+    {disclaimer}
+  </span>
+  <div x-show="activeTab === 'Alle'">
+    {visibleDonors.slice(0, 3).map((donor) => (
+      <DonorRow name={donor.name} amount={donor.amount} currency={currency} />
+    ))}
+  </div>
+  <div x-show="activeTab === 'Top'" x-cloak>
+    {topDonors.slice(0, 3).map((donor) => (
+      <DonorRow name={donor.name} amount={donor.amount} currency={currency} />
+    ))}
+  </div>
+</section>

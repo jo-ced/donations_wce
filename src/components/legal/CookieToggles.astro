@@ -1,0 +1,28 @@
+---
+const items = [
+  { label: 'Essential', descWidth: 120, on: true },
+  { label: 'Analytics', descWidth: 135, on: false },
+  { label: 'Marketing', descWidth: 150, on: false },
+  { label: 'Preferences', descWidth: 165, on: false },
+];
+---
+
+<div class="mt-4 flex flex-col gap-2.5">
+  {items.map((item) => (
+    <div class="flex justify-between items-center px-3.5 py-2.5 bg-surface rounded-lg border border-border">
+      <div>
+        <div class="text-xs font-semibold text-text">{item.label}</div>
+        <div style={`width: ${item.descWidth}px; height: 7px; border-radius: 4px; background: var(--color-accent-soft);`}></div>
+      </div>
+      <div
+        class="w-9 h-5 rounded-[10px] relative"
+        style={`background: ${item.on ? 'var(--color-accent)' : 'var(--color-border)'};`}
+      >
+        <div
+          class="w-4 h-4 rounded-full bg-white absolute top-[2px]"
+          style={`left: ${item.on ? '18px' : '2px'};`}
+        ></div>
+      </div>
+    </div>
+  ))}
+</div>

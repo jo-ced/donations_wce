@@ -1,0 +1,14 @@
+---
+interface Props {
+  w?: string;
+  h?: number;
+  round?: string;
+  color?: string;
+}
+
+const { w = '100%', h = 14, round = '4px', color = 'var(--color-bar)' } = Astro.props;
+---
+
+<div
+  style={`width: ${w}; height: ${h}px; border-radius: ${round}; background: ${color}; flex-shrink: 0;`}
+></div>

@@ -1,0 +1,20 @@
+---
+const headerWidths = [70, 90, 60];
+const rows = [0, 1, 2, 3];
+const cellWidths = [65, 85, 55];
+---
+
+<div class="mt-4 border border-border rounded-lg overflow-hidden">
+  <div class="flex bg-accent-soft px-3 py-2 gap-3">
+    {headerWidths.map((w) => (
+      <div style={`width: ${w}px; height: 9px; border-radius: 4px; background: var(--color-border-dark); flex-shrink: 0;`}></div>
+    ))}
+  </div>
+  {rows.map((r) => (
+    <div class="flex px-3 py-2.5 gap-3 border-t border-border">
+      {cellWidths.map((w) => (
+        <div style={`width: ${w + (r % 2) * 10}px; height: 8px; border-radius: 4px; background: var(--color-bar); flex-shrink: 0;`}></div>
+      ))}
+    </div>
+  ))}
+</div>

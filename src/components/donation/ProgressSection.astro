@@ -1,0 +1,30 @@
+---
+import Label from '../Label.astro';
+
+interface Props {
+  raised: number;
+  goal: number;
+  currency: string;
+  protectedLabel: string;
+}
+
+const { raised, goal, currency, protectedLabel } = Astro.props;
+const pct = Math.round((raised / goal) * 100);
+---
+
+<section class="px-5 py-4 border-b border-border">
+  <Label>Spendenfortschritt</Label>
+  <div class="flex justify-between items-baseline mb-2">
+    <span class="text-[26px] font-bold text-text">{currency}{raised.toLocaleString()}</span>
+    <span class="text-xs text-text-light">von {currency}{(goal / 1000).toFixed(1)}K &middot; {pct}%</span>
+  </div>
+  <div class="h-1.5 rounded-[3px] bg-accent-soft">
+    <div class="h-full rounded-[3px] bg-accent transition-[width] duration-600 ease-out" style={`width: ${pct}%`}></div>
+  </div>
+  <div class="mt-2.5 flex gap-1.5 items-center">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" stroke-width="2">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+    <span class="text-[11px] text-text-light">{protectedLabel}</span>
+  </div>
+</section>

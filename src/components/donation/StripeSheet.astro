@@ -1,0 +1,309 @@
+---
+// Dummy Stripe payment sheet — prototype only
+---
+
+<div
+  x-data="{
+    open: false,
+    amounts: [10, 25, 50, 100],
+    amount: 25,
+    customAmount: '',
+    cardNumber: '',
+    expiry: '',
+    cvc: '',
+    cardName: '',
+    shareOnList: true,
+    displayName: '',
+    processing: false,
+    done: false,
+    get finalAmount() {
+      return this.customAmount ? (parseInt(this.customAmount) || 0) : this.amount;
+    },
+    get autoDisplayName() {
+      const parts = this.cardName.trim().split(' ');
+      if (!parts[0]) return '';
+      return parts[0] + (parts[1] ? ' ' + parts[1][0] + '.' : '');
+    },
+    pay() {
+      if (this.processing || this.done) return;
+      this.processing = true;
+      setTimeout(() => { this.processing = false; this.done = true; }, 2200);
+    }
+  }"
+  @open-stripe.window="
+    open = true;
+    done = false;
+    processing = false;
+    cardNumber = '';
+    expiry = '';
+    cvc = '';
+    cardName = '';
+    customAmount = '';
+    amount = 25;
+    shareOnList = true;
+    displayName = '';
+  "
+  class="fixed inset-0 z-50 flex flex-col justify-end pointer-events-none"
+>
+  <!-- Backdrop -->
+  <div
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition-opacity ease-out duration-300"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition-opacity ease-in duration-250"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    class="absolute inset-0 bg-black/40 backdrop-blur-[2px] pointer-events-auto"
+    @click="open = false"
+  ></div>
+
+  <!-- Sheet panel -->
+  <div
+    x-show="open"
+    x-cloak
+    x-transition:enter="transition ease-[cubic-bezier(0.32,0.72,0,1)] duration-500"
+    x-transition:enter-start="translate-y-full"
+    x-transition:enter-end="translate-y-0"
+    x-transition:leave="transition ease-in duration-300"
+    x-transition:leave-start="translate-y-0"
+    x-transition:leave-end="translate-y-full"
+    class="relative bg-white rounded-t-[20px] max-h-[92vh] overflow-y-auto max-w-lg mx-auto w-full shadow-[0_-8px_40px_rgba(0,0,0,0.12)] pointer-events-auto"
+  >
+    <!-- Handle bar -->
+    <div class="flex justify-center pt-3 pb-1 sticky top-0 bg-white z-10">
+      <div class="w-10 h-1 bg-[#e0ddd8] rounded-full"></div>
+    </div>
+
+    <!-- ── Success state ── -->
+    <div x-show="done" x-cloak class="flex flex-col items-center py-12 px-6 text-center">
+      <div class="w-16 h-16 rounded-full bg-[#f0fdf4] flex items-center justify-center mb-4">
+        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <p class="text-[18px] font-semibold text-[#2c2a26] mb-1">Vielen Dank!</p>
+      <p class="text-[13px] text-[#9e9a93] mb-1">
+        Ihre Spende von <span class="font-semibold text-[#2c2a26]" x-text="'€' + finalAmount"></span> ist auf dem Weg zu Velid.
+      </p>
+      <p
+        class="text-[12px] text-[#9e9a93] mb-8"
+        x-show="shareOnList && (displayName || autoDisplayName)"
+      >
+        <span class="font-medium text-[#6b6760]" x-text="displayName || autoDisplayName"></span> erscheint in der Spendenliste.
+      </p>
+      <button
+        @click="open = false"
+        class="w-full py-3.5 rounded-[10px] bg-[#2c2a26] text-white text-[14px] font-semibold"
+      >
+        Schließen
+      </button>
+    </div>
+
+    <!-- ── Form state ── -->
+    <div x-show="!done">
+
+      <!-- Header -->
+      <div class="flex items-start justify-between px-5 pt-3 pb-4">
+        <div>
+          <p class="text-[11px] text-[#9e9a93] font-semibold uppercase tracking-[0.8px]">Spende an</p>
+          <p class="text-[15px] font-semibold text-[#2c2a26] mt-0.5 leading-snug">Velids Traum vom Hören</p>
+        </div>
+        <button
+          @click="open = false"
+          class="w-8 h-8 rounded-full bg-[#f5f4f0] flex items-center justify-center text-[#6b6760] hover:bg-[#e8e6e0] transition-colors mt-0.5 flex-shrink-0"
+        >
+          <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
+            <path d="M1 1L10 10M10 1L1 10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Amount selector -->
+      <div class="px-5 pb-4">
+        <p class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px] mb-2">Betrag</p>
+        <div class="grid grid-cols-4 gap-2 mb-2.5">
+          <template x-for="a in amounts" :key="a">
+            <button
+              @click="amount = a; customAmount = ''"
+              :class="amount === a && !customAmount
+                ? 'bg-[#2c2a26] text-white border-[#2c2a26]'
+                : 'bg-white text-[#2c2a26] border-[#d4d0c8] hover:border-[#a8a298]'"
+              class="py-2.5 rounded-[8px] border text-[13px] font-semibold transition-all"
+              x-text="'€' + a"
+            ></button>
+          </template>
+        </div>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-[#9e9a93] pointer-events-none">€</span>
+          <input
+            type="number"
+            placeholder="Eigener Betrag"
+            x-model="customAmount"
+            @input="if (customAmount) amount = 0"
+            class="w-full pl-7 pr-4 py-2.5 rounded-[8px] border border-[#d4d0c8] text-[13px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors bg-transparent"
+          />
+        </div>
+      </div>
+
+      <div class="h-px bg-[#f0ede8] mx-5 mb-4"></div>
+
+      <!-- Card details -->
+      <div class="px-5 pb-4">
+        <div class="flex items-center gap-1.5 mb-2.5">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9e9a93" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+          <p class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px]">Kartendaten</p>
+        </div>
+
+        <!-- Grouped card fields -->
+        <div class="border border-[#d4d0c8] rounded-[10px] overflow-hidden mb-2.5 focus-within:border-[#2c2a26] transition-colors">
+          <!-- Card number -->
+          <div class="flex items-center px-3 py-2.5 border-b border-[#d4d0c8]">
+            <input
+              type="text"
+              placeholder="1234 5678 9012 3456"
+              maxlength="19"
+              x-model="cardNumber"
+              @input="cardNumber = cardNumber.replace(/\D/g,'').slice(0,16).replace(/(\d{4})(?=\d)/g,'$1 ').trim()"
+              class="flex-1 min-w-0 text-[13px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none bg-transparent"
+            />
+            <div class="ml-2 flex-shrink-0 w-8 h-5 bg-[#1a1f71] rounded-[3px] flex items-center justify-center">
+              <span class="text-white text-[7px] font-bold italic tracking-wide">VISA</span>
+            </div>
+          </div>
+          <!-- Expiry + CVC -->
+          <div class="flex divide-x divide-[#d4d0c8]">
+            <div class="flex-1 px-3 py-2.5">
+              <input
+                type="text"
+                placeholder="MM / YY"
+                maxlength="5"
+                x-model="expiry"
+                @input="
+                  let d = expiry.replace(/\D/g,'').slice(0,4);
+                  expiry = d.length > 2 ? d.slice(0,2) + ' / ' + d.slice(2) : d;
+                "
+                class="w-full text-[13px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none bg-transparent"
+              />
+            </div>
+            <div class="flex-1 px-3 py-2.5 flex items-center gap-1.5">
+              <input
+                type="text"
+                placeholder="CVC"
+                maxlength="3"
+                x-model="cvc"
+                @input="cvc = cvc.replace(/\D/g,'').slice(0,3)"
+                class="w-full text-[13px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none bg-transparent"
+              />
+              <svg class="flex-shrink-0 text-[#c4c0b8]" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                <path d="M1 10h22"/>
+                <path d="M7 15h.01M11 15h2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Name on card -->
+        <input
+          type="text"
+          placeholder="Name auf der Karte"
+          x-model="cardName"
+          class="w-full px-3 py-2.5 rounded-[10px] border border-[#d4d0c8] text-[13px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors bg-transparent"
+        />
+      </div>
+
+      <div class="h-px bg-[#f0ede8] mx-5 mb-4"></div>
+
+      <!-- Donor listing section -->
+      <div class="px-5 pb-4">
+        <p class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px] mb-3">Spendenliste</p>
+
+        <!-- Custom checkbox -->
+        <label class="flex items-start gap-3 cursor-pointer mb-3 select-none">
+          <div class="relative flex-shrink-0 mt-0.5">
+            <input type="checkbox" x-model="shareOnList" class="sr-only" />
+            <div
+              :class="shareOnList
+                ? 'bg-[#2c2a26] border-[#2c2a26]'
+                : 'bg-white border-[#d4d0c8] hover:border-[#a8a298]'"
+              class="w-5 h-5 rounded-[5px] border-2 transition-all flex items-center justify-center"
+            >
+              <svg
+                x-show="shareOnList"
+                class="w-3 h-3 text-white flex-shrink-0"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <p class="text-[13px] font-medium text-[#2c2a26] leading-snug">Meinen Namen in der Spendenliste anzeigen</p>
+            <p class="text-[11px] text-[#9e9a93] mt-0.5">Ihr Name wird öffentlich auf dieser Seite angezeigt</p>
+          </div>
+        </label>
+
+        <!-- Display name field -->
+        <div
+          x-show="shareOnList"
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 -translate-y-1"
+          x-transition:enter-end="opacity-100 translate-y-0"
+          x-transition:leave="transition ease-in duration-150"
+          x-transition:leave-start="opacity-100 translate-y-0"
+          x-transition:leave-end="opacity-0 -translate-y-1"
+        >
+          <input
+            type="text"
+            :placeholder="autoDisplayName || 'Anzeigename (z.B. Sarah L.)'"
+            x-model="displayName"
+            class="w-full px-3 py-2.5 rounded-[10px] border border-[#d4d0c8] text-[13px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors"
+          />
+          <p class="text-[11px] text-[#9e9a93] mt-1.5 ml-0.5">
+            Leer lassen, um
+            <span class="text-[#6b6760] font-medium" x-text="autoDisplayName || 'den Namen auf der Karte'"></span> zu verwenden
+          </p>
+        </div>
+      </div>
+
+      <!-- Pay button -->
+      <div class="px-5 pb-7">
+        <button
+          @click="pay()"
+          :disabled="processing"
+          :class="processing ? 'opacity-75 cursor-not-allowed' : 'hover:opacity-90 active:scale-[0.99]'"
+          class="w-full py-3.5 rounded-[10px] bg-[#2c2a26] text-white text-[14px] font-semibold transition-all relative overflow-hidden"
+        >
+          <span x-show="!processing" x-text="finalAmount + ' € spenden'"></span>
+          <span x-show="processing" class="flex items-center justify-center gap-2">
+            <svg class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 22 6.477 22 12h-4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Wird verarbeitet…
+          </span>
+        </button>
+
+        <!-- Powered by Stripe -->
+        <div class="flex items-center justify-center gap-1.5 mt-3.5">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="#b0acaa">
+            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+          </svg>
+          <span class="text-[11px] text-[#c4c0b8]">Bereitgestellt von</span>
+          <svg width="34" height="14" viewBox="0 0 60 25" fill="none" aria-label="Stripe">
+            <path d="M5.45 9.5c0-.87.72-1.2 1.9-1.2 1.7 0 3.85.52 5.55 1.44V5.3C11.1 4.56 9.3 4.25 7.5 4.25 3.2 4.25.5 6.47.5 9.73c0 5.1 7.02 4.28 7.02 6.48 0 1.03-.9 1.36-2.14 1.36-1.86 0-4.23-.76-6.1-1.79v4.48c2.08.9 4.18 1.28 6.1 1.28 4.42 0 7.45-2.18 7.45-5.48C12.83 10.9 5.45 11.88 5.45 9.5zM23.2 4.64l-3.05.65V2.5l-3.84.82v13.7c0 2.54 1.9 4.18 4.43 4.18 1.4 0 2.43-.26 2.99-.57v-3.1c-.55.22-3.26 1.01-3.26-1.52V9.1h3.26l-.53-4.46zM26 8.64V20.9h4V8.64H26zm2-5.5a2.3 2.3 0 100 4.6 2.3 2.3 0 000-4.6zm12.5 5.13c-.96 0-1.57.45-1.91.76L38.3 8.64h-3.53V20.9h4v-7.6c.47-.62 1.28-1.01 2.42-1.01h.63V8.5c-.3-.06-.57-.23-1.32-.23zm6.1.1c-3.96 0-6.47 2.66-6.47 6.38s2.63 6.35 6.6 6.35c1.96 0 3.43-.47 4.37-1.26V16c-.94.73-2.17 1.14-3.5 1.14-1.74 0-3.1-.76-3.43-2.39h8.52c.03-.32.06-.64.06-.97 0-3.5-2.2-6-6.15-6zm-2.3 5.1c.28-1.56 1.3-2.36 2.3-2.36s2.01.8 2.27 2.36h-4.57z" fill="#c4c0b8"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

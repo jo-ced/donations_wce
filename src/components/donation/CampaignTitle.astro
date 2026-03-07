@@ -1,0 +1,36 @@
+---
+import Label from "../Label.astro";
+import Avatar from "../Avatar.astro";
+
+interface Props {
+    title: string;
+    subtitle: string;
+    organizerName: string;
+    organizerRole: string;
+}
+
+const { title, subtitle, organizerName, organizerRole } = Astro.props;
+---
+
+<section
+    class="px-5 pt-4 pb-8 border-b border-border lg:flex lg:justify-between lg:items-end"
+>
+    <div>
+        <Label>Kampagne</Label>
+        <h1 class="text-lg font-bold text-text leading-snug m-0">{title}</h1>
+        <p class="mt-1.5 text-sm text-text-mid m-0">{subtitle}</p>
+    </div>
+    <div>
+        <div class="mt-4 flex items-center gap-2.5">
+            <Avatar size={32} name={organizerName} />
+            <div>
+                <span class="text-[11px] font-semibold text-text block"
+                    >{organizerName}</span
+                >
+                <span class="text-[10px] text-text-light block mt-0.5"
+                    >{organizerRole}</span
+                >
+            </div>
+        </div>
+    </div>
+</section>

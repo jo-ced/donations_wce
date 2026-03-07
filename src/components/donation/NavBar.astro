@@ -1,0 +1,41 @@
+---
+interface Props {
+  siteName: string;
+}
+
+const { siteName } = Astro.props;
+---
+
+<nav class="flex justify-between items-center px-5 py-2.5 border-b border-border">
+  <div class="flex items-center gap-2.5">
+    <span class="hidden lg:block text-sm font-semibold text-text-mid">WCE Spenden</span>
+    <img src="/dream-of-hearing/images/logo/wce-logo.webp" alt={siteName} class="h-8 w-auto" />
+  </div>
+  <a
+    href="https://worldculture-empowerment.international"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="btn-charity"
+  >
+    Zum Verein &rarr;
+  </a>
+</nav>
+
+<style>
+  .btn-charity {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text);
+    background: var(--color-accent-soft);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+  .btn-charity:hover {
+    background: var(--color-border);
+  }
+</style>

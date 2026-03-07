@@ -1,0 +1,17 @@
+---
+interface Props {
+  links: { label: string; href: string }[];
+  siteName: string;
+}
+
+const { links, siteName } = Astro.props;
+---
+
+<div class="py-3 px-5 text-center">
+  <span class="text-[9px] text-text-light block">{siteName}</span>
+  <div class="mt-1.5 flex justify-center gap-3">
+    {links.map((link) => (
+      <a href={link.href} class="text-[9px] text-text-light no-underline hover:text-text">{link.label}</a>
+    ))}
+  </div>
+</div>
