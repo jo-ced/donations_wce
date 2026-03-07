@@ -22,3 +22,8 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# large video files (served from external host)
+public/**/*.mp4
+public/**/*.webm
+public/**/*.mov

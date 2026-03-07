@@ -5,13 +5,15 @@ interface Props {
 
 const { basePath } = Astro.props;
 
+const externalVideoBase = 'https://worldculture-empowerment.international/derTraumVomHoren/videos';
+
 const items = [
   { type: 'image' as const, src: `${basePath}/images/dream-of-hearing-1.webp` },
-  { type: 'video' as const, src: `${basePath}/videos/dream-of-hearing-video-1.mp4` },
+  { type: 'video' as const, src: `${externalVideoBase}/dream-of-hearing-video-1.mp4` },
   { type: 'image' as const, src: `${basePath}/images/dream-of-hearing-2.webp` },
-  { type: 'video' as const, src: `${basePath}/videos/dream-of-hearing-video-2.mp4` },
+  { type: 'video' as const, src: `${externalVideoBase}/dream-of-hearing-video-2.mp4` },
   { type: 'image' as const, src: `${basePath}/images/dream-of-hearing-3.webp` },
-  { type: 'video' as const, src: `${basePath}/videos/dream-of-hearing-video-3.mp4` },
+  { type: 'video' as const, src: `${externalVideoBase}/dream-of-hearing-video-3.mp4` },
 ];
 ---
 
