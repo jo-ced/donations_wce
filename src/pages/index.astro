@@ -27,6 +27,7 @@ const donors = api.data.map((d) => ({
     name: d.donor.name ?? "Anonymous",
     amount: d.amount / 100,
     anonymous: d.donor.anonymous,
+    created: d.created,
 }));
 const donorCount = api.data.length;
 ---

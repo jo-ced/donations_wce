@@ -1,44 +1,165 @@
 ---
-import Label from '../Label.astro';
-import DonorRow from './DonorRow.astro';
+import Label from "../Label.astro";
+import DonorRow from "./DonorRow.astro";
 
 interface Props {
-  donors: { name: string; amount: number; anonymous: boolean }[];
-  donorCount: number;
-  currency: string;
-  disclaimer: string;
+    donors: {
+        name: string;
+        amount: number;
+        anonymous: boolean;
+        created: number;
+    }[];
+    donorCount: number;
+    currency: string;
+    disclaimer: string;
 }
 
 const { donors, donorCount, currency, disclaimer } = Astro.props;
-const visibleDonors = donors.filter(d => !d.anonymous);
+
+function timeAgo(created: number): string {
+    const diff = Math.floor(Date.now() / 1000) - created;
+    const minutes = Math.floor(diff / 60);
+    const hours = Math.floor(diff / 3600);
+    const days = Math.floor(diff / 86400);
+    if (days > 0) return `vor ${days} ${days === 1 ? "Tag" : "Tagen"}`;
+    if (hours > 0) return `vor ${hours} ${hours === 1 ? "Stunde" : "Stunden"}`;
+    if (minutes > 0)
+        return `vor ${minutes} ${minutes === 1 ? "Minute" : "Minuten"}`;
+    return "gerade eben";
+}
+
+const visibleDonors = donors.filter((d) => !d.anonymous);
 const topDonors = [...visibleDonors].sort((a, b) => b.amount - a.amount);
 ---
 
-<section class="px-5 py-4 border-b border-border" x-data="{ activeTab: 'Alle' }">
-  <div class="flex justify-between items-center">
-    <Label>Spenden &middot; {donorCount}</Label>
-    <div class="flex gap-1">
-      <template x-for="tab in ['Alle', 'Top']">
-        <button
-          x-text="tab"
-          @click="activeTab = tab"
-          :class="activeTab === tab ? 'bg-accent text-white' : 'bg-transparent text-text-light'"
-          class="px-2.5 py-1 rounded-[6px] border-none text-[10px] font-semibold cursor-pointer capitalize"
-        ></button>
-      </template>
+<section
+    class="px-5 py-4 border-b border-border"
+    x-data={`{ activeTab: 'Alle', showAll: 10, showTop: 10, allTotal: ${visibleDonors.length}, topTotal: ${topDonors.length} }`}
+>
+    <div class="flex justify-between items-center">
+        <Label>Spenden &middot; {donorCount}</Label>
+        <div class="flex gap-1">
+            <template x-for="tab in ['Alle', 'Top']">
+                <button
+                    x-text="tab"
+                    @click="activeTab = tab"
+                    :class="activeTab === tab ? 'bg-accent text-white' : 'bg-transparent text-text-light'"
+                    class="px-2.5 py-1 rounded-[6px] border-none text-[10px] font-semibold cursor-pointer capitalize"
+                ></button>
+            </template>
+        </div>
     </div>
-  </div>
-  <span class="text-[10px] text-text-light italic block mb-1">
-    {disclaimer}
-  </span>
-  <div x-show="activeTab === 'Alle'">
-    {visibleDonors.slice(0, 3).map((donor) => (
-      <DonorRow name={donor.name} amount={donor.amount} currency={currency} />
-    ))}
-  </div>
-  <div x-show="activeTab === 'Top'" x-cloak>
-    {topDonors.slice(0, 3).map((donor) => (
-      <DonorRow name={donor.name} amount={donor.amount} currency={currency} />
-    ))}
-  </div>
+    <span class="text-[10px] text-text-light italic block my-1">
+        {disclaimer}
+    </span>
+    <div x-show="activeTab === 'Alle'">
+        {
+            visibleDonors.map((donor, i) => (
+                <div x-show={`${i} < showAll`}>
+                    <DonorRow
+                        name={donor.name}
+                        amount={donor.amount}
+                        currency={currency}
+                        timeAgo={timeAgo(donor.created)}
+                    />
+                </div>
+            ))
+        }
+        <button
+            x-show="showAll < allTotal"
+            @click="showAll = Math.min(showAll + 10, allTotal)"
+            class="mt-3 bg-transparent border-none p-0 text-xs font-semibold cursor-pointer flex items-center gap-1"
+            style="color: #c2552d;"
+        >
+            <span x-text="`Mehr anzeigen (${allTotal - showAll})`"></span>
+            <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+        <button
+            x-show="showAll > 10"
+            @click="showAll = 10"
+            class="mt-3 bg-transparent border-none p-0 text-xs font-semibold cursor-pointer flex items-center gap-1"
+            style="color: #c2552d;"
+        >
+            <span>Weniger anzeigen</span>
+            <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="rotate-180"
+            >
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+    </div>
+    <div x-show="activeTab === 'Top'" x-cloak>
+        {
+            topDonors.map((donor, i) => (
+                <div x-show={`${i} < showTop`}>
+                    <DonorRow
+                        name={donor.name}
+                        amount={donor.amount}
+                        currency={currency}
+                        timeAgo={timeAgo(donor.created)}
+                    />
+                </div>
+            ))
+        }
+        <button
+            x-show="showTop < topTotal"
+            @click="showTop = Math.min(showTop + 10, topTotal)"
+            class="mt-3 bg-transparent border-none p-0 text-xs font-semibold cursor-pointer flex items-center gap-1"
+            style="color: #c2552d;"
+        >
+            <span x-text="`Mehr anzeigen (${topTotal - showTop})`"></span>
+            <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+        <button
+            x-show="showTop > 10"
+            @click="showTop = 10"
+            class="mt-3 bg-transparent border-none p-0 text-xs font-semibold cursor-pointer flex items-center gap-1"
+            style="color: #c2552d;"
+        >
+            <span>Weniger anzeigen</span>
+            <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="rotate-180"
+            >
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+    </div>
 </section>
