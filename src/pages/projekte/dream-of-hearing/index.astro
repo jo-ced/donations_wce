@@ -1,39 +1,30 @@
 ---
 import { getEntry } from "astro:content";
-import BaseLayout from "../layouts/BaseLayout.astro";
-import NavBar from "../components/donation/NavBar.astro";
-import ProductGallery from "../components/donation/ProductGallery.astro";
-import CampaignTitle from "../components/donation/CampaignTitle.astro";
-import ProgressSection from "../components/donation/ProgressSection.astro";
-import Story from "../components/donation/Story.astro";
-import DonationsList from "../components/donation/DonationsList.astro";
-import OrganizerSection from "../components/donation/OrganizerSection.astro";
-import TrustSection from "../components/donation/TrustSection.astro";
-import StickyBottom from "../components/donation/StickyBottom.astro";
-import FooterLinks from "../components/FooterLinks.astro";
-import StripeSheet from "../components/donation/StripeSheet.astro";
-import ShareDialog from "../components/donation/ShareDialog.astro";
-import { getDonations, getCurrencySymbol } from "../data/donations";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import NavBar from "../../../components/donation/NavBar.astro";
+import ProductGallery from "../../../components/donation/ProductGallery.astro";
+import CampaignTitle from "../../../components/donation/CampaignTitle.astro";
+import ProgressSection from "../../../components/donation/ProgressSection.astro";
+import Story from "../../../components/donation/Story.astro";
+import DonationsList from "../../../components/donation/DonationsList.astro";
+import OrganizerSection from "../../../components/donation/OrganizerSection.astro";
+import TrustSection from "../../../components/donation/TrustSection.astro";
+import StickyBottom from "../../../components/donation/StickyBottom.astro";
+import FooterLinks from "../../../components/FooterLinks.astro";
+import StripeSheet from "../../../components/donation/StripeSheet.astro";
+import ShareDialog from "../../../components/donation/ShareDialog.astro";
+import { CAMPAIGN_GOAL, getCurrencySymbol } from "../../../data/donations";
 
 const project = await getEntry("projects", "velids-traum-vom-hoeren");
 if (!project) throw new Error("Project not found");
 const { data } = project;
 
-const api = getDonations();
-const currency = getCurrencySymbol(api.campaign.currency);
-const raised = api.data.reduce((sum, d) => sum + d.amount, 0) / 100;
-const goal = api.campaign.goal / 100;
-const donors = api.data.map((d) => ({
-    name: d.donor.name ?? "Anonymous",
-    amount: d.amount / 100,
-    anonymous: d.donor.anonymous,
-    created: d.created,
-}));
-const donorCount = api.data.length;
+const currency = getCurrencySymbol("eur");
+const goal = CAMPAIGN_GOAL / 100;
 ---
 
 <BaseLayout title={data.title}>
-    <div class="min-h-screen bg-bg text-text pb-20 lg:pb-0">
+    <div class="min-h-screen bg-bg text-text pb-40 lg:pb-0">
         <!-- Navbar -->
         <div class="max-w-5xl mx-auto">
             <NavBar siteName={data.nav.siteName} />
@@ -62,8 +53,6 @@ const donorCount = api.data.length;
                     image={data.story.image}
                 />
                 <DonationsList
-                    donors={donors}
-                    donorCount={donorCount}
                     currency={currency}
                     disclaimer={data.donorDisclaimer}
                 />
@@ -74,7 +63,6 @@ const donorCount = api.data.length;
                 class="lg:sticky lg:top-6 lg:border lg:border-border lg:rounded-xl lg:overflow-hidden lg:shadow-sm"
             >
                 <ProgressSection
-                    raised={raised}
                     goal={goal}
                     currency={currency}
                     protectedLabel={data.protectedLabel}
@@ -105,10 +93,7 @@ const donorCount = api.data.length;
 
         <!-- Footer -->
         <div class="max-w-5xl mx-auto lg:px-6">
-            <FooterLinks
-                links={data.footerLinks}
-                siteName={data.nav.siteName}
-            />
+            <FooterLinks siteName={data.nav.siteName} />
         </div>
 
         <!-- Mobile-only sticky bottom CTA -->
@@ -116,6 +101,8 @@ const donorCount = api.data.length;
             <StickyBottom
                 primaryLabel={data.cta.primary}
                 secondaryLabel={data.cta.secondary}
+                goal={goal}
+                currency={currency}
             />
         </div>
 

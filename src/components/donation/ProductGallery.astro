@@ -1,323 +1,494 @@
 ---
 interface Props {
-  basePath: string;
+    basePath: string;
 }
 
 const { basePath } = Astro.props;
 
-const externalVideoBase = 'https://worldculture-empowerment.international/derTraumVomHoren/videos';
+const externalVideoBase =
+    "https://worldculture-empowerment.international/website-template/images/projects/dream-of-hearing";
 
 const items = [
-  { type: 'image' as const, src: `${basePath}/images/dream-of-hearing-1.webp` },
-  { type: 'video' as const, src: `${externalVideoBase}/dream-of-hearing-video-1.mp4` },
-  { type: 'image' as const, src: `${basePath}/images/dream-of-hearing-2.webp` },
-  { type: 'video' as const, src: `${externalVideoBase}/dream-of-hearing-video-2.mp4` },
-  { type: 'image' as const, src: `${basePath}/images/dream-of-hearing-3.webp` },
-  { type: 'video' as const, src: `${externalVideoBase}/dream-of-hearing-video-3.mp4` },
+    {
+        type: "image" as const,
+        src: `${basePath}/images/dream-of-hearing-1.webp`,
+    },
+    {
+        type: "image" as const,
+        src: `${basePath}/images/dream-of-hearing-2.webp`,
+    },
+    {
+        type: "image" as const,
+        src: `${basePath}/images/dream-of-hearing-3.webp`,
+    },
+    { type: "video" as const, src: `${externalVideoBase}/video1.mp4` },
+    { type: "video" as const, src: `${externalVideoBase}/video2.mp4` },
+    { type: "video" as const, src: `${externalVideoBase}/video3.mp4` },
 ];
 ---
 
 <div class="gallery" data-gallery>
-  <div class="gallery-track" data-gallery-track>
-    {items.map((item, i) => (
-      <div class="gallery-slide" data-index={i}>
-        {item.type === 'image' ? (
-          <img
-            src={item.src}
-            alt={`Bild ${i + 1}`}
-            class="gallery-media"
-            loading={i === 0 ? 'eager' : 'lazy'}
-          />
-        ) : (
-          <video
-            src={item.src}
-            class="gallery-media"
-            muted
-            playsinline
-            loop
-            preload={i <= 1 ? 'metadata' : 'none'}
-            data-gallery-video
-          />
-        )}
-      </div>
-    ))}
-  </div>
+    <div class="gallery-track" data-gallery-track>
+        {
+            items.map((item, i) => (
+                <div class="gallery-slide" data-index={i}>
+                    {item.type === "image" ? (
+                        <img
+                            src={item.src}
+                            alt={`Bild ${i + 1}`}
+                            class="gallery-media"
+                            loading={i === 0 ? "eager" : "lazy"}
+                        />
+                    ) : (
+                        <video
+                            src={item.src}
+                            class="gallery-media"
+                            playsinline
+                            loop
+                            preload={i <= 1 ? "metadata" : "none"}
+                            data-gallery-video
+                        />
+                    )}
+                </div>
+            ))
+        }
+    </div>
 
-  <button class="gallery-btn gallery-btn-prev" data-gallery-prev aria-label="Zurück">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="15 18 9 12 15 6" />
-    </svg>
-  </button>
-  <button class="gallery-btn gallery-btn-next" data-gallery-next aria-label="Weiter">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="9 18 15 12 9 6" />
-    </svg>
-  </button>
+    <button
+        class="gallery-btn gallery-btn-prev"
+        data-gallery-prev
+        aria-label="Zurück"
+    >
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+    </button>
+    <button
+        class="gallery-btn gallery-btn-next"
+        data-gallery-next
+        aria-label="Weiter"
+    >
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+    </button>
 
-  <div class="gallery-counter" data-gallery-counter>
-    1/{items.length}
-  </div>
+    <div class="gallery-counter" data-gallery-counter>
+        1/{items.length}
+    </div>
 
-  <button class="gallery-mute" data-gallery-mute aria-label="Ton deaktivieren" hidden>
-    <!-- muted icon (shown when muted) -->
-    <svg data-mute-icon="muted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-      <line x1="23" y1="9" x2="17" y2="15"/>
-      <line x1="17" y1="9" x2="23" y2="15"/>
-    </svg>
-    <!-- unmuted icon (shown when unmuted) -->
-    <svg data-mute-icon="unmuted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
-      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-      <path d="M19.07 4.93a10 10 0 010 14.14"/>
-      <path d="M15.54 8.46a5 5 0 010 7.07"/>
-    </svg>
-  </button>
+    <button
+        class="gallery-mute"
+        data-gallery-mute
+        aria-label="Ton deaktivieren"
+        hidden
+    >
+        <!-- muted icon (shown when muted) -->
+        <svg
+            data-mute-icon="muted"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+        >
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+        <!-- unmuted icon (shown when unmuted) -->
+        <svg
+            data-mute-icon="unmuted"
+            width="14"
+            height="14"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            style="display:none"
+        >
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 010 14.14"></path>
+            <path d="M15.54 8.46a5 5 0 010 7.07"></path>
+        </svg>
+    </button>
 
-  <div class="gallery-dots">
-    {items.map((_, i) => (
-      <button
-        class:list={['gallery-dot', { active: i === 0 }]}
-        data-gallery-dot={i}
-        aria-label={`Zu Bild ${i + 1}`}
-      />
-    ))}
-  </div>
+    <div class="gallery-dots flex items-center">
+        {
+            items.map((item, i) => (
+                <button
+                    class:list={[
+                        "gallery-dot",
+                        { active: i === 0 },
+                        { "gallery-dot-video": item.type === "video" },
+                    ]}
+                    data-gallery-dot={i}
+                    aria-label={
+                        item.type === "video"
+                            ? `Zu Video ${i + 1}`
+                            : `Zu Bild ${i + 1}`
+                    }
+                >
+                    {item.type === "video" && (
+                        <svg
+                            viewBox="0 0 10 10"
+                            fill="currentColor"
+                            aria-hidden="true"
+                        >
+                            <polygon points="2,1 9,5 2,9" />
+                        </svg>
+                    )}
+                </button>
+            ))
+        }
+    </div>
 </div>
 
 <style>
-  .gallery {
-    position: relative;
-    background: #000;
-    overflow: hidden;
-  }
-
-  .gallery-track {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .gallery-track::-webkit-scrollbar {
-    display: none;
-  }
-
-  .gallery-slide {
-    flex: 0 0 100%;
-    scroll-snap-align: center;
-    aspect-ratio: 1 / 1;
-    position: relative;
-  }
-
-  .gallery-media {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .gallery-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.9);
-    color: #333;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-    z-index: 10;
-    transition: opacity 0.15s;
-  }
-
-  .gallery-btn:hover {
-    background: #fff;
-  }
-
-  .gallery-btn-prev {
-    left: 10px;
-  }
-
-  .gallery-btn-next {
-    right: 10px;
-  }
-
-  @media (min-width: 768px) {
-    .gallery-btn {
-      display: flex;
-    }
-    .gallery-btn[hidden] {
-      display: none;
-    }
-  }
-
-  @media (min-width: 1024px) {
     .gallery {
-      border-radius: 12px;
-      overflow: hidden;
+        position: relative;
+        overflow: hidden;
+        transition: height 0.3s ease;
     }
-  }
 
-  .gallery-counter {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 100px;
-    z-index: 10;
-  }
+    .gallery-track {
+        display: flex;
+        align-items: flex-start;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
 
-  .gallery-mute {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(0, 0, 0, 0.6);
-    color: #fff;
-    font-size: 12px;
-    font-weight: 500;
-    padding: 3px 10px;
-    border-radius: 100px;
-    border: none;
-    cursor: pointer;
-    z-index: 10;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    line-height: 1;
-  }
+    .gallery-track::-webkit-scrollbar {
+        display: none;
+    }
 
-  .gallery-mute[hidden] {
-    display: none;
-  }
+    .gallery-slide {
+        flex: 0 0 100%;
+        scroll-snap-align: center;
+        position: relative;
+    }
 
-  .gallery-dots {
-    position: absolute;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 6px;
-    z-index: 10;
-  }
+    .gallery-media {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
 
-  .gallery-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.45);
-    transition: background 0.2s;
-  }
+    .gallery-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+        transition: opacity 0.15s;
+    }
 
-  .gallery-dot.active {
-    background: #fff;
-  }
+    .gallery-btn:hover {
+        background: #fff;
+    }
+
+    .gallery-btn-prev {
+        left: 10px;
+    }
+
+    .gallery-btn-next {
+        right: 10px;
+    }
+
+    @media (min-width: 768px) {
+        .gallery-btn {
+            display: flex;
+        }
+        .gallery-btn[hidden] {
+            display: none;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .gallery {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+    }
+
+    .gallery-counter {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 100px;
+        z-index: 10;
+    }
+
+    .gallery-mute {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 100px;
+        border: none;
+        cursor: pointer;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        line-height: 1;
+    }
+
+    .gallery-mute[hidden] {
+        display: none;
+    }
+
+    .gallery-dots {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+        z-index: 10;
+    }
+
+    .gallery-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.45);
+        transition:
+            background 0.2s,
+            color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gallery-dot.active {
+        background: #fff;
+    }
+
+    .gallery-dot-video {
+        width: 14px;
+        height: 10px;
+        border-radius: 3px;
+        background: rgba(255, 255, 255, 0.45);
+        color: rgba(255, 255, 255, 0.45);
+    }
+
+    .gallery-dot-video.active {
+        background: rgba(255, 255, 255, 0.15);
+        color: #fff;
+    }
+
+    .gallery-dot-video svg {
+        width: 6px;
+        height: 6px;
+    }
 </style>
 
 <script>
-  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach((gallery) => {
-    const track = gallery.querySelector<HTMLElement>('[data-gallery-track]')!;
-    const counter = gallery.querySelector<HTMLElement>('[data-gallery-counter]')!;
-    const prevBtn = gallery.querySelector<HTMLButtonElement>('[data-gallery-prev]')!;
-    const nextBtn = gallery.querySelector<HTMLButtonElement>('[data-gallery-next]')!;
-    const muteBtn = gallery.querySelector<HTMLButtonElement>('[data-gallery-mute]')!;
-    const mutedIcon = muteBtn.querySelector<SVGElement>('[data-mute-icon="muted"]')!;
-    const unmutedIcon = muteBtn.querySelector<SVGElement>('[data-mute-icon="unmuted"]')!;
-    const dots = gallery.querySelectorAll<HTMLButtonElement>('[data-gallery-dot]');
-    const total = track.children.length;
-    let current = 0;
-    let globalMuted = true;
+    document
+        .querySelectorAll<HTMLElement>("[data-gallery]")
+        .forEach((gallery) => {
+            const track = gallery.querySelector<HTMLElement>(
+                "[data-gallery-track]",
+            )!;
+            const counter = gallery.querySelector<HTMLElement>(
+                "[data-gallery-counter]",
+            )!;
+            const prevBtn = gallery.querySelector<HTMLButtonElement>(
+                "[data-gallery-prev]",
+            )!;
+            const nextBtn = gallery.querySelector<HTMLButtonElement>(
+                "[data-gallery-next]",
+            )!;
+            const muteBtn = gallery.querySelector<HTMLButtonElement>(
+                "[data-gallery-mute]",
+            )!;
+            const mutedIcon = muteBtn.querySelector<SVGElement>(
+                '[data-mute-icon="muted"]',
+            )!;
+            const unmutedIcon = muteBtn.querySelector<SVGElement>(
+                '[data-mute-icon="unmuted"]',
+            )!;
+            const dots =
+                gallery.querySelectorAll<HTMLButtonElement>(
+                    "[data-gallery-dot]",
+                );
+            const total = track.children.length;
+            let current = 0;
+            let globalMuted = false;
 
-    function currentVideo(): HTMLVideoElement | null {
-      return (track.children[current] as HTMLElement)?.querySelector('video') ?? null;
-    }
+            function currentVideo(): HTMLVideoElement | null {
+                return (
+                    (track.children[current] as HTMLElement)?.querySelector(
+                        "video",
+                    ) ?? null
+                );
+            }
 
-    function applyMute(video: HTMLVideoElement) {
-      video.muted = globalMuted;
-    }
+            function syncHeight() {
+                const slide = track.children[current] as HTMLElement;
+                const media = slide?.querySelector("img, video") as
+                    | HTMLImageElement
+                    | HTMLVideoElement
+                    | null;
+                if (!media) return;
+                const h = (media as HTMLElement).offsetHeight;
+                if (h > 0) gallery.style.height = h + "px";
+            }
 
-    function updateMuteButton(isVideo: boolean) {
-      muteBtn.hidden = !isVideo;
-      mutedIcon.style.display = globalMuted ? '' : 'none';
-      unmutedIcon.style.display = globalMuted ? 'none' : '';
-      muteBtn.setAttribute('aria-label', globalMuted ? 'Ton aktivieren' : 'Ton deaktivieren');
-    }
+            function applyMute(video: HTMLVideoElement) {
+                video.muted = globalMuted;
+            }
 
-    function updateUI(index: number) {
-      if (index === current && counter.textContent !== `${index + 1}/${total}`) {
-        // First render
-      } else if (index === current) {
-        return;
-      }
+            function updateMuteButton(isVideo: boolean) {
+                muteBtn.hidden = !isVideo;
+                mutedIcon.style.display = globalMuted ? "" : "none";
+                unmutedIcon.style.display = globalMuted ? "none" : "";
+                muteBtn.setAttribute(
+                    "aria-label",
+                    globalMuted ? "Ton aktivieren" : "Ton deaktivieren",
+                );
+            }
 
-      // Pause all videos, play current if video
-      track.querySelectorAll('video').forEach((v) => v.pause());
-      const currentSlide = track.children[index] as HTMLElement;
-      const video = currentSlide?.querySelector('video');
-      if (video) {
-        applyMute(video);
-        video.play().catch(() => {});
-      }
+            function updateUI(index: number) {
+                if (
+                    index === current &&
+                    counter.textContent !== `${index + 1}/${total}`
+                ) {
+                    // First render
+                } else if (index === current) {
+                    return;
+                }
 
-      current = index;
-      counter.textContent = `${current + 1}/${total}`;
+                // Pause all videos, play current if video
+                track.querySelectorAll("video").forEach((v) => v.pause());
+                const currentSlide = track.children[index] as HTMLElement;
+                const video = currentSlide?.querySelector("video");
+                if (video) {
+                    applyMute(video);
+                    video.play().catch(() => {});
+                }
 
-      dots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === current);
-      });
+                current = index;
+                counter.textContent = `${current + 1}/${total}`;
 
-      prevBtn.hidden = current === 0;
-      nextBtn.hidden = current === total - 1;
-      updateMuteButton(!!video);
-    }
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle("active", i === current);
+                });
 
-    function goTo(index: number) {
-      track.scrollTo({ left: index * track.offsetWidth, behavior: 'smooth' });
-    }
+                prevBtn.hidden = current === 0;
+                nextBtn.hidden = current === total - 1;
+                updateMuteButton(!!video);
+                syncHeight();
+            }
 
-    muteBtn.addEventListener('click', () => {
-      globalMuted = !globalMuted;
-      const video = currentVideo();
-      if (video) applyMute(video);
-      updateMuteButton(true);
-    });
+            function goTo(index: number) {
+                track.scrollTo({
+                    left: index * track.offsetWidth,
+                    behavior: "smooth",
+                });
+            }
 
-    track.addEventListener('scroll', () => {
-      const index = Math.round(track.scrollLeft / track.offsetWidth);
-      updateUI(index);
-    }, { passive: true });
+            muteBtn.addEventListener("click", () => {
+                globalMuted = !globalMuted;
+                const video = currentVideo();
+                if (video) applyMute(video);
+                updateMuteButton(true);
+            });
 
-    prevBtn.addEventListener('click', () => goTo(current - 1));
-    nextBtn.addEventListener('click', () => goTo(current + 1));
+            track.addEventListener(
+                "scroll",
+                () => {
+                    const index = Math.round(
+                        track.scrollLeft / track.offsetWidth,
+                    );
+                    updateUI(index);
+                },
+                { passive: true },
+            );
 
-    dots.forEach((dot) => {
-      dot.addEventListener('click', () => {
-        goTo(Number(dot.dataset.galleryDot));
-      });
-    });
+            prevBtn.addEventListener("click", () => goTo(current - 1));
+            nextBtn.addEventListener("click", () => goTo(current + 1));
 
-    // Tap to play/pause videos
-    track.querySelectorAll('video').forEach((video) => {
-      video.addEventListener('click', () => {
-        if (video.paused) video.play();
-        else video.pause();
-      });
-    });
+            dots.forEach((dot) => {
+                dot.addEventListener("click", () => {
+                    goTo(Number(dot.dataset.galleryDot));
+                });
+            });
 
-    // Initial state
-    updateUI(0);
-  });
+            // Tap to play/pause videos
+            track.querySelectorAll("video").forEach((video) => {
+                video.addEventListener("click", () => {
+                    if (video.paused) video.play();
+                    else video.pause();
+                });
+            });
+
+            // Sync height when media loads (images & videos may not have dimensions yet)
+            track.querySelectorAll("img").forEach((img) => {
+                if (!img.complete)
+                    img.addEventListener("load", syncHeight, { once: true });
+            });
+            track.querySelectorAll("video").forEach((video) => {
+                if (!video.videoHeight)
+                    video.addEventListener("loadedmetadata", syncHeight, {
+                        once: true,
+                    });
+            });
+
+            // Sync height on window resize
+            window.addEventListener("resize", syncHeight, { passive: true });
+
+            // Initial state
+            updateUI(0);
+            syncHeight();
+        });
 </script>

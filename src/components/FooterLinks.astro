@@ -1,17 +1,21 @@
 ---
 interface Props {
-  links: { label: string; href: string }[];
   siteName: string;
 }
 
-const { links, siteName } = Astro.props;
+const { siteName } = Astro.props;
 ---
 
-<div class="py-3 px-5 text-center">
-  <span class="text-[9px] text-text-light block">{siteName}</span>
-  <div class="mt-1.5 flex justify-center gap-3">
-    {links.map((link) => (
-      <a href={link.href} class="text-[9px] text-text-light no-underline hover:text-text">{link.label}</a>
-    ))}
+<div class="py-3 px-5 text-center text-[12px] text-text-light">
+  <div class="mb-1">
+    <a href="http://worldculture-empowerment.international/satzung-des-vereins" class="mr-5 no-underline hover:text-text">Satzung des Vereins</a>
+    <a href="http://worldculture-empowerment.international/impressum" class="mr-5 no-underline hover:text-text">Impressum</a>
+    <a href="http://worldculture-empowerment.international/datenschutzerklarung" class="no-underline hover:text-text">Datenschutzerklärung</a>
+  </div>
+</div>
+
+<div class="py-0 px-5 text-center text-[12px] text-text-light">
+  <div class="lg:pb-8">
+      Worldculture Empowerment e.V.
   </div>
 </div>

@@ -1,0 +1,61 @@
+---
+export const prerender = false;
+
+import Stripe from 'stripe';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
+const sessionId = Astro.url.searchParams.get('session_id');
+
+let session: Stripe.Checkout.Session | null = null;
+if (sessionId) {
+  try {
+    session = await stripe.checkout.sessions.retrieve(sessionId);
+  } catch { /* invalid or expired session */ }
+}
+
+const amount = session?.amount_total
+  ? (session.amount_total / 100).toFixed(0)
+  : null;
+const displayName = session?.metadata?.displayName || null;
+const showOnList = session?.metadata?.showOnList === 'true';
+---
+
+<BaseLayout title="Danke!">
+  <div class="min-h-screen bg-bg flex flex-col items-center justify-center px-6 text-center">
+    <div class="max-w-md w-full">
+      <div class="w-16 h-16 rounded-full bg-[#f0fdf4] flex items-center justify-center mb-4 mx-auto">
+        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+
+      <p class="text-[18px] font-semibold text-[#2c2a26] mb-1">
+        Vielen Dank!
+      </p>
+
+      {amount && (
+        <p class="text-[13px] text-[#9e9a93] mb-1">
+          Ihre Spende von <span class="font-semibold text-[#2c2a26]">€{amount}</span> ist auf dem Weg zu Velid.
+        </p>
+      )}
+
+      {showOnList && displayName && (
+        <p class="text-[12px] text-[#9e9a93] mb-8">
+          <span class="font-medium text-[#6b6760]">{displayName}</span> erscheint in der Spendenliste.
+        </p>
+      )}
+
+      {!showOnList && !displayName && (
+        <div class="mb-8"></div>
+      )}
+
+      <a
+        href="/projekte/spende"
+        class="w-full py-3.5 rounded-[10px] bg-[#2c2a26] text-white text-[14px] font-semibold text-center block no-underline"
+      >
+        Zurück
+      </a>
+    </div>
+  </div>
+</BaseLayout>

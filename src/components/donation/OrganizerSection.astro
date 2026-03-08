@@ -15,13 +15,13 @@ const { name, location } = Astro.props;
   <div class="flex items-center gap-3">
     <Avatar size={44} name={name} />
     <div>
-      <span class="text-xs font-semibold text-text block">{name}</span>
+      <span class="text-sm font-semibold text-text block">{name}</span>
       <div class="mt-1.5 flex gap-1.5 items-center">
         <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" stroke-width="2">
           <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
           <circle cx="12" cy="10" r="3" />
         </svg>
-        <span class="text-[10px] text-text-light">{location}</span>
+        <span class="text-[12px] text-text-light">{location}</span>
       </div>
     </div>
   </div>

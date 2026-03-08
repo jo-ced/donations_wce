@@ -1,30 +1,6 @@
-// Timestamps spread over the last 5 days from Mar 7, 2026
-const donations = [
-  { id: 'don_1a2b3c4d', amount: 15000, name: 'Mehmet K.', anonymous: false, created: 1772524800 },  // Mar 2, 08:00
-  { id: 'don_2b3c4d5e', amount: 7500, name: 'Sarah L.', anonymous: false, created: 1772553600 },    // Mar 2, 16:00
-  { id: 'don_3c4d5e6f', amount: 20000, name: null, anonymous: true, created: 1772582400 },           // Mar 3, 00:00
-  { id: 'don_4d5e6f7g', amount: 5000, name: 'Julia R.', anonymous: false, created: 1772625600 },     // Mar 3, 12:00
-  { id: 'don_5e6f7g8h', amount: 10000, name: null, anonymous: true, created: 1772668800 },           // Mar 4, 00:00
-  { id: 'don_6f7g8h9i', amount: 3000, name: 'Emre B.', anonymous: false, created: 1772697600 },     // Mar 4, 08:00
-  { id: 'don_7g8h9i0j', amount: 4500, name: 'Claudia W.', anonymous: false, created: 1772726400 },  // Mar 4, 16:00
-  { id: 'don_8h9i0j1k', amount: 2500, name: null, anonymous: true, created: 1772755200 },           // Mar 5, 00:00
-  { id: 'don_9i0j1k2l', amount: 6000, name: 'Fatma Ö.', anonymous: false, created: 1772784000 },    // Mar 5, 08:00
-  { id: 'don_0j1k2l3m', amount: 4000, name: 'Thomas H.', anonymous: false, created: 1772812800 },   // Mar 5, 16:00
-  { id: 'don_1k2l3m4n', amount: 1500, name: null, anonymous: true, created: 1772841600 },            // Mar 6, 00:00
-  { id: 'don_2l3m4n5o', amount: 8000, name: 'Lena M.', anonymous: false, created: 1772856000 },     // Mar 6, 04:00
-  { id: 'don_3m4n5o6p', amount: 2000, name: 'Ali C.', anonymous: false, created: 1772870400 },      // Mar 6, 08:00
-  { id: 'don_4n5o6p7q', amount: 3500, name: 'Marie D.', anonymous: false, created: 1772884800 },    // Mar 6, 12:00
-  { id: 'don_5o6p7q8r', amount: 1000, name: null, anonymous: true, created: 1772899200 },           // Mar 6, 16:00
-  { id: 'don_6p7q8r9s', amount: 2500, name: 'Hakan T.', anonymous: false, created: 1772913600 },    // Mar 6, 20:00
-  { id: 'don_7q8r9s0t', amount: 4400, name: 'Sofia P.', anonymous: false, created: 1772920800 },    // Mar 6, 22:00
-];
+import Stripe from 'stripe';
 
-const campaign = {
-  id: 'cmp_velit-hearing-aids',
-  object: 'campaign' as const,
-  goal: 130000,
-  currency: 'eur',
-};
+export const CAMPAIGN_GOAL = 2000000; // cents
 
 export interface DonationItem {
   id: string;
@@ -45,30 +21,52 @@ export interface DonationsResponse {
   url: string;
   has_more: boolean;
   data: DonationItem[];
-  campaign: typeof campaign;
+  campaign: {
+    id: string;
+    object: 'campaign';
+    goal: number;
+    currency: string;
+  };
 }
 
-export function getDonations(): DonationsResponse {
-  const data: DonationItem[] = donations.map((d) => ({
-    id: d.id,
-    object: 'donation',
-    amount: d.amount,
-    currency: 'eur',
-    status: 'succeeded',
-    created: d.created,
-    donor: {
-      name: d.anonymous ? null : d.name,
-      anonymous: d.anonymous,
-    },
-    metadata: {},
-  }));
+export async function fetchDonations(): Promise<DonationsResponse> {
+  const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
+  const sessions = await stripe.checkout.sessions.list({
+    limit: 100,
+    status: 'complete',
+  });
+
+  const data: DonationItem[] = sessions.data
+    .filter((s) => s.payment_status === 'paid')
+    .map((s) => {
+      const showOnList = s.metadata?.showOnList === 'true';
+      const displayName = s.metadata?.displayName || null;
+      return {
+        id: s.id,
+        object: 'donation' as const,
+        amount: Number(s.metadata?.originalAmountCents) || s.amount_total || 0,
+        currency: s.currency || 'eur',
+        status: 'succeeded' as const,
+        created: s.created,
+        donor: {
+          name: showOnList ? displayName : null,
+          anonymous: !showOnList,
+        },
+        metadata: s.metadata || {},
+      };
+    });
 
   return {
     object: 'list',
     url: '/api/donations.json',
     has_more: false,
     data,
-    campaign,
+    campaign: {
+      id: 'cmp_velit-hearing-aids',
+      object: 'campaign',
+      goal: CAMPAIGN_GOAL,
+      currency: 'eur',
+    },
   };
 }
 
