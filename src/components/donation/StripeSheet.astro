@@ -1,11 +1,8 @@
 ---
 // @ts-nocheck
 // Stripe Checkout payment sheet — collects meta only, redirects to Stripe
----
-
----
 const amountsEnv = import.meta.env.PUBLIC_DONATION_AMOUNTS || '10,25,50,100';
-const amounts = amountsEnv.split(',').map(a => parseInt(a, 10));
+const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
 ---
 
 <div
@@ -653,7 +650,6 @@ const amounts = amountsEnv.split(',').map(a => parseInt(a, 10));
                         viewBox="0 0 60 25"
                         xmlns="http://www.w3.org/2000/svg"
                         width="40"
-                        height="auto"
                         class="UserLogo variant--"
                         ><title>Stripe logo</title><path
                             fill="var(--userLogoColor, #0A2540)"
