@@ -48,11 +48,7 @@ const goal = CAMPAIGN_GOAL / 100;
             <!-- Left column: gallery + story + donations -->
             <div>
                 <ProductGallery basePath="/dream-of-hearing" />
-                <Story
-                    intro={data.story.intro}
-                    body={data.story.body}
-                    image={data.story.image}
-                />
+                <Story intro={data.storyIntro} />
                 <DonationsList
                     currency={currency}
                     disclaimer={data.donorDisclaimer}
