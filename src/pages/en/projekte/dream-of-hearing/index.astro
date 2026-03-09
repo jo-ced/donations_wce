@@ -27,9 +27,42 @@ const { Content } = await render(project);
 
 const currency = getCurrencySymbol("eur");
 const goal = CAMPAIGN_GOAL / 100;
+
+const origin = Astro.url.origin;
+const canonicalUrl = `${origin}/en/projekte/dream-of-hearing/`;
+const alternateUrl = `${origin}/projekte/dream-of-hearing/`;
+const ogImage = `${origin}${data.heroImage}`;
 ---
 
-<BaseLayout title={data.title} lang={lang}>
+<BaseLayout
+    title={data.title}
+    description={data.subtitle}
+    ogImage={ogImage}
+    canonicalUrl={canonicalUrl}
+    alternateUrl={alternateUrl}
+    lang={lang}
+>
+    <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "DonateAction",
+        "name": data.title,
+        "description": data.subtitle,
+        "url": canonicalUrl,
+        "image": ogImage,
+        "recipient": {
+            "@type": "Person",
+            "name": data.recipientName,
+        },
+        "agent": {
+            "@type": "Organization",
+            "name": data.organizer.name,
+            "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Cologne",
+                "addressCountry": "DE",
+            },
+        },
+    })} />
     <div class="min-h-screen bg-bg text-text pb-40 lg:pb-0">
         <div class="max-w-5xl mx-auto">
             <NavBar lang={lang} currentPath={Astro.url.pathname} />
@@ -53,6 +86,14 @@ const goal = CAMPAIGN_GOAL / 100;
                 <Story intro={data.storyIntro} lang={lang}>
                     <Content />
                 </Story>
+                <div class="lg:hidden">
+                    <ProgressSection
+                        goal={goal}
+                        currency={currency}
+                        lang={lang}
+                    />
+                    <FundingSection items={data.funding} lang={lang} />
+                </div>
                 <DonationsList
                     currency={currency}
                     lang={lang}
@@ -62,11 +103,13 @@ const goal = CAMPAIGN_GOAL / 100;
             <div
                 class="lg:sticky lg:top-6 lg:border lg:border-border lg:rounded-xl lg:overflow-hidden lg:shadow-sm"
             >
-                <ProgressSection
-                    goal={goal}
-                    currency={currency}
-                    lang={lang}
-                />
+                <div class="hidden lg:block">
+                    <ProgressSection
+                        goal={goal}
+                        currency={currency}
+                        lang={lang}
+                    />
+                </div>
                 <div
                     class="hidden lg:flex flex-col gap-2 px-5 py-4 border-b border-border"
                 >
@@ -82,7 +125,9 @@ const goal = CAMPAIGN_GOAL / 100;
                         {t('cta.share')}
                     </button>
                 </div>
-                <FundingSection items={data.funding} lang={lang} />
+                <div class="hidden lg:block">
+                    <FundingSection items={data.funding} lang={lang} />
+                </div>
                 <OrganizerSection
                     name={data.organizer.name}
                     location={data.organizer.location}

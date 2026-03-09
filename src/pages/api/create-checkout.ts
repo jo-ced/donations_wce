@@ -29,7 +29,8 @@ const PAYMENT_METHOD_TYPES: Record<string, Stripe.Checkout.SessionCreateParams.P
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { amount, donorName, showOnList, displayName, coverFees, paymentMethod = 'sepa_debit' } = body;
+    const { amount, donorName, showOnList, displayName, coverFees, paymentMethod = 'sepa_debit', lang } = body;
+    const langPrefix = lang === 'en' ? '/en' : '';
 
     const euros = Number(amount);
     if (!euros || euros < 1 || euros > 50_000) {
@@ -66,8 +67,8 @@ export const POST: APIRoute = async ({ request }) => {
         feesCovered: String(!!coverFees),
         paymentMethod: method,
       },
-      success_url: `${siteUrl}/projekte/dream-of-hearing/danke?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${siteUrl}/projekte/dream-of-hearing`,
+      success_url: `${siteUrl}${langPrefix}/projekte/dream-of-hearing/danke?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${siteUrl}${langPrefix}/projekte/dream-of-hearing`,
     });
 
     return new Response(

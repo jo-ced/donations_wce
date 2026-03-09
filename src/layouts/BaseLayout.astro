@@ -3,10 +3,17 @@ import '../styles/global.css';
 
 interface Props {
   title: string;
+  description?: string;
+  ogImage?: string;       // absolute URL
+  canonicalUrl?: string;
+  alternateUrl?: string;  // the other-language version's absolute URL
   lang?: string;
+  noindex?: boolean;
 }
 
-const { title, lang = 'de' } = Astro.props;
+const { title, description, ogImage, canonicalUrl, alternateUrl, lang = 'de', noindex = false } = Astro.props;
+
+const alternateLang = lang === 'de' ? 'en' : 'de';
 ---
 
 <html lang={lang}>
@@ -18,6 +25,34 @@ const { title, lang = 'de' } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>{title}</title>
+
+    <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"} />
+    {description && <meta name="description" content={description} />}
+
+    {/* Canonical + hreflang */}
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    {canonicalUrl && <link rel="alternate" hreflang={lang} href={canonicalUrl} />}
+    {alternateUrl && <link rel="alternate" hreflang={alternateLang} href={alternateUrl} />}
+    {canonicalUrl && alternateUrl && (
+      <link rel="alternate" hreflang="x-default" href={lang === 'de' ? canonicalUrl : alternateUrl} />
+    )}
+
+    {/* Open Graph */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:locale" content={lang === 'en' ? 'en_US' : 'de_DE'} />
+    {alternateUrl && <meta property="og:locale:alternate" content={lang === 'en' ? 'de_DE' : 'en_US'} />}
+
+    {/* Twitter / X */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    {description && <meta name="twitter:description" content={description} />}
+    {ogImage && <meta name="twitter:image" content={ogImage} />}
+
+    <slot name="head" />
   </head>
   <body class="font-['DM_Sans',sans-serif]">
     <slot />

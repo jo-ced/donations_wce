@@ -14,8 +14,22 @@ const t = useTranslations(lang);
 
 <section
     class="px-5 py-4 border-b border-border"
-    x-data={`{ raised: 0, goal: ${goal} }`}
-    @donations-loaded.window="raised = $event.detail.raised"
+    x-data={`{
+        raised: 0,
+        goal: ${goal},
+        countUp(target) {
+            const duration = 1200;
+            const start = performance.now();
+            const step = (now) => {
+                const t = Math.min((now - start) / duration, 1);
+                const ease = 1 - Math.pow(1 - t, 3);
+                this.raised = Math.round(ease * target);
+                if (t < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }
+    }`}
+    @donations-loaded.window="countUp($event.detail.raised)"
 >
     <Label>{t('section.progress')}</Label>
     <div class="flex justify-between items-baseline mb-2">
