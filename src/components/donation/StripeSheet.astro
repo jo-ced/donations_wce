@@ -8,9 +8,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
 <div
     x-data="{
     open: false,
-    amounts: [
-      {amounts.join(', ')}
-    ],
+    amounts: [{amounts.join(', ')}],
     amount: 25,
     customAmount: '',
     donorName: '',
