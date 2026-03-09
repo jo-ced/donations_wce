@@ -37,7 +37,7 @@ const t = useTranslations(lang);
             {currency}<span x-text="raised.toLocaleString()">0</span>
         </span>
         <span class="text-sm text-text-light">
-            {t('progress.of')} {currency}{(goal / 1000).toFixed(1)}T &middot; <span
+            {t('progress.of')} {currency}{(goal / 1000).toFixed(0)}T &middot; <span
                 class="text-text"
                 x-text="(Math.min((raised / goal) * 100, 100)).toFixed(1).replace('.', ',') + '%'"
                 >0,0%</span
