@@ -1,5 +1,5 @@
 {
-  "ratelimit": [
+  "rateLimit": [
     {
       "path": "/api/create-checkout",
       "window": "60s",
