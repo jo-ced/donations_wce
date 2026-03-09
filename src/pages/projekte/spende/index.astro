@@ -19,6 +19,7 @@ import { CAMPAIGN_GOAL, getCurrencySymbol } from "../../../data/donations";
 const project = await getEntry("projects", "velids-traum-vom-hoeren");
 if (!project) throw new Error("Project not found");
 const { data } = project;
+const { Content } = await project.render();
 
 const currency = getCurrencySymbol("eur");
 const goal = CAMPAIGN_GOAL / 100;
@@ -38,6 +39,7 @@ const goal = CAMPAIGN_GOAL / 100;
                 subtitle={data.subtitle}
                 organizerName={data.organizer.name}
                 organizerRole={data.organizer.role}
+                intro={data.storyIntro}
             />
         </div>
 
@@ -48,7 +50,7 @@ const goal = CAMPAIGN_GOAL / 100;
             <!-- Left column: gallery + story + donations -->
             <div>
                 <ProductGallery basePath="/dream-of-hearing" />
-                <Story intro={data.storyIntro} />
+                <Story><Content /></Story>
                 <DonationsList
                     currency={currency}
                     disclaimer={data.donorDisclaimer}
