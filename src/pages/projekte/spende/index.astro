@@ -1,5 +1,5 @@
 ---
-import { getEntry } from "astro:content";
+import { getEntry, render } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import NavBar from "../../../components/donation/NavBar.astro";
 import ProductGallery from "../../../components/donation/ProductGallery.astro";
@@ -19,7 +19,7 @@ import { CAMPAIGN_GOAL, getCurrencySymbol } from "../../../data/donations";
 const project = await getEntry("projects", "velids-traum-vom-hoeren");
 if (!project) throw new Error("Project not found");
 const { data } = project;
-const { Content } = await project.render();
+const { Content } = await render(project);
 
 const currency = getCurrencySymbol("eur");
 const goal = CAMPAIGN_GOAL / 100;
