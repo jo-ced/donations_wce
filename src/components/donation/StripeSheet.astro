@@ -191,7 +191,7 @@ document.addEventListener('alpine:init', () => {
                     />
                     <div>
                         <p
-                            class="text-[11px] text-[#9e9a93] font-semibold uppercase tracking-[0.8px]"
+                            class="text-[12px] text-[#9e9a93] font-semibold uppercase tracking-[0.8px]"
                         >
                             {t('stripe.donateTo')}
                         </p>
@@ -390,7 +390,7 @@ document.addEventListener('alpine:init', () => {
                         >
                             {t('stripe.showOnList')}
                         </p>
-                        <p class="text-[11px] text-[#9e9a93] mt-0.5">
+                        <p class="text-[12px] text-[#9e9a93] mt-0.5">
                             {t('stripe.namePublic')}
                         </p>
                     </div>
@@ -412,7 +412,7 @@ document.addEventListener('alpine:init', () => {
                         x-model="displayName"
                         class="w-full px-3 py-2.5 rounded-[10px] border border-[#d4d0c8] text-[16px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors"
                     />
-                    <p class="text-[11px] text-[#9e9a93] mt-1.5 ml-0.5">
+                    <p class="text-[12px] text-[#9e9a93] mt-1.5 ml-0.5">
                         {t('stripe.leaveEmpty')}
                         <span
                             class="text-[#6b6760] font-medium"
@@ -465,8 +465,8 @@ document.addEventListener('alpine:init', () => {
                                 class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full transition-colors tabular-nums"
                             ></span>
                         </p>
-                        <p class="text-[11px] text-[#9e9a93] mt-0.5">
-                            {t('stripe.feesExplain').split('–')[0].trim()}
+                        <p class="text-[12px] text-[#9e9a93] mt-0.5">
+                            {t('stripe.feesExplainShort').split('–')[0].trim()}
                         </p>
                     </div>
                 </label>
@@ -476,7 +476,7 @@ document.addEventListener('alpine:init', () => {
             <div class="px-5 pb-4 -mt-1">
                 <button
                     @click="showFeeInfo = !showFeeInfo"
-                    class="flex items-center gap-1 text-[11px] text-[#9e9a93] hover:text-[#6b6760] transition-colors select-none"
+                    class="flex items-center gap-1 text-[12px] text-[#9e9a93] hover:text-[#6b6760] transition-colors select-none"
                 >
                     <svg
                         width="12"
@@ -505,7 +505,7 @@ document.addEventListener('alpine:init', () => {
                     x-transition:leave="transition ease-in duration-150"
                     x-transition:leave-start="opacity-100 translate-y-0"
                     x-transition:leave-end="opacity-0 -translate-y-1"
-                    class="mt-3 bg-[#f8f7f4] rounded-[10px] p-3.5 text-[11px] text-[#6b6760] space-y-2.5"
+                    class="mt-3 bg-[#f8f7f4] rounded-[10px] p-3.5 text-[12px] text-[#6b6760] space-y-2.5"
                 >
                     <p class="text-[#2c2a26] font-medium text-[12px]">
                         {t('stripe.whyFees')}
@@ -565,7 +565,7 @@ document.addEventListener('alpine:init', () => {
                             </span>
                             <span
                                 class="tabular-nums font-medium text-[#2c2a26]"
-                                >0,35 € (Fix)</span
+                                >0,35 €</span
                             >
                         </div>
                         <div class="flex items-start justify-between">
