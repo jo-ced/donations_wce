@@ -1,22 +1,26 @@
 ---
-import { getEntry, render } from "astro:content";
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import NavBar from "../../../components/donation/NavBar.astro";
-import ProductGallery from "../../../components/donation/ProductGallery.astro";
-import CampaignTitle from "../../../components/donation/CampaignTitle.astro";
-import ProgressSection from "../../../components/donation/ProgressSection.astro";
-import Story from "../../../components/donation/Story.astro";
-import DonationsList from "../../../components/donation/DonationsList.astro";
-import OrganizerSection from "../../../components/donation/OrganizerSection.astro";
-import FundingSection from "../../../components/donation/FundingSection.astro";
-import TrustSection from "../../../components/donation/TrustSection.astro";
-import StickyBottom from "../../../components/donation/StickyBottom.astro";
-import FooterLinks from "../../../components/FooterLinks.astro";
-import StripeSheet from "../../../components/donation/StripeSheet.astro";
-import ShareDialog from "../../../components/donation/ShareDialog.astro";
-import { CAMPAIGN_GOAL, getCurrencySymbol } from "../../../data/donations";
+import { getCollection, render } from "astro:content";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import NavBar from "../../../../components/donation/NavBar.astro";
+import ProductGallery from "../../../../components/donation/ProductGallery.astro";
+import CampaignTitle from "../../../../components/donation/CampaignTitle.astro";
+import ProgressSection from "../../../../components/donation/ProgressSection.astro";
+import Story from "../../../../components/donation/Story.astro";
+import DonationsList from "../../../../components/donation/DonationsList.astro";
+import OrganizerSection from "../../../../components/donation/OrganizerSection.astro";
+import FundingSection from "../../../../components/donation/FundingSection.astro";
+import TrustSection from "../../../../components/donation/TrustSection.astro";
+import StickyBottom from "../../../../components/donation/StickyBottom.astro";
+import FooterLinks from "../../../../components/FooterLinks.astro";
+import StripeSheet from "../../../../components/donation/StripeSheet.astro";
+import ShareDialog from "../../../../components/donation/ShareDialog.astro";
+import { CAMPAIGN_GOAL, getCurrencySymbol } from "../../../../data/donations";
+import { useTranslations } from "../../../../i18n/utils";
 
-const project = await getEntry("projects", "velids-traum-vom-hoeren");
+const lang = 'en' as const;
+const t = useTranslations(lang);
+const allProjects = await getCollection("projects");
+const project = allProjects.find(p => p.id === `en/velids-traum-vom-hoeren`);
 if (!project) throw new Error("Project not found");
 const { data } = project;
 const { Content } = await render(project);
@@ -25,88 +29,87 @@ const currency = getCurrencySymbol("eur");
 const goal = CAMPAIGN_GOAL / 100;
 ---
 
-<BaseLayout title={data.title}>
+<BaseLayout title={data.title} lang={lang}>
     <div class="min-h-screen bg-bg text-text pb-40 lg:pb-0">
-        <!-- Navbar -->
         <div class="max-w-5xl mx-auto">
-            <NavBar siteName={data.nav.siteName} />
+            <NavBar lang={lang} currentPath={Astro.url.pathname} />
         </div>
 
-        <!-- Campaign title: above grid on desktop -->
         <div class="block max-w-5xl mx-auto lg:px-6 lg:pt-6">
             <CampaignTitle
                 title={data.title}
                 subtitle={data.subtitle}
                 organizerName={data.organizer.name}
                 organizerRole={data.organizer.role}
-                intro={data.storyIntro}
+                lang={lang}
             />
         </div>
 
-        <!-- Main content: single column on mobile, two-column on desktop -->
         <div
             class="max-w-5xl mx-auto lg:grid lg:grid-cols-[1fr_360px] lg:gap-8 lg:px-6 lg:pt-4 lg:pb-10 lg:items-start"
         >
-            <!-- Left column: gallery + story + donations -->
             <div>
                 <ProductGallery basePath="/dream-of-hearing" />
-                <Story><Content /></Story>
+                <Story intro={data.storyIntro} lang={lang}>
+                    <Content />
+                </Story>
                 <DonationsList
                     currency={currency}
-                    disclaimer={data.donorDisclaimer}
+                    lang={lang}
                 />
             </div>
 
-            <!-- Right column: sticky sidebar -->
             <div
                 class="lg:sticky lg:top-6 lg:border lg:border-border lg:rounded-xl lg:overflow-hidden lg:shadow-sm"
             >
                 <ProgressSection
                     goal={goal}
                     currency={currency}
-                    protectedLabel={data.protectedLabel}
+                    lang={lang}
                 />
-                <!-- Desktop-only donate buttons -->
                 <div
                     class="hidden lg:flex flex-col gap-2 px-5 py-4 border-b border-border"
                 >
                     <button
                         onclick="window.dispatchEvent(new CustomEvent('open-stripe'))"
                         class="w-full px-5 py-3 rounded-[10px] text-[13px] font-semibold tracking-[0.3px] cursor-pointer border-none bg-accent text-white"
-                        >{data.cta.primary}</button
+                        >{t('cta.donate')}</button
                     >
                     <button
                         onclick="window.dispatchEvent(new CustomEvent('trigger-share'))"
                         class="w-full px-5 py-3 rounded-[10px] text-[13px] font-semibold cursor-pointer bg-transparent border border-border text-text-mid"
                     >
-                        {data.cta.secondary}
+                        {t('cta.share')}
                     </button>
                 </div>
-                <FundingSection />
+                <FundingSection items={data.funding} lang={lang} />
                 <OrganizerSection
                     name={data.organizer.name}
                     location={data.organizer.location}
+                    lang={lang}
                 />
-                <TrustSection items={data.trust} />
+                <TrustSection items={data.trust} lang={lang} />
             </div>
         </div>
 
-        <!-- Footer -->
         <div class="max-w-5xl mx-auto lg:px-6">
-            <FooterLinks siteName={data.nav.siteName} />
+            <FooterLinks lang={lang} />
         </div>
 
-        <!-- Mobile-only sticky bottom CTA -->
         <div class="lg:hidden">
             <StickyBottom
-                primaryLabel={data.cta.primary}
-                secondaryLabel={data.cta.secondary}
                 goal={goal}
                 currency={currency}
+                lang={lang}
             />
         </div>
 
-        <StripeSheet />
-        <ShareDialog title={data.title} text={data.subtitle} />
+        <StripeSheet
+            orgName={data.organizer.name}
+            campaignName={data.stripeDescription}
+            recipientName={data.recipientName}
+            lang={lang}
+        />
+        <ShareDialog title={data.title} text={data.subtitle} lang={lang} />
     </div>
 </BaseLayout>

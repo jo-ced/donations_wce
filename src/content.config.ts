@@ -5,6 +5,7 @@ import { z } from 'astro/zod';
 const projects = defineCollection({
   loader: glob({ pattern: '**/*.mdx', base: 'src/content/projects' }),
   schema: z.object({
+    lang: z.string(),
     title: z.string(),
     subtitle: z.string(),
     heroImage: z.string(),
@@ -22,21 +23,9 @@ const projects = defineCollection({
         description: z.string(),
       })
     ),
-    nav: z.object({
-      siteName: z.string(),
-    }),
-    footerLinks: z.array(
-      z.object({
-        label: z.string(),
-        href: z.string(),
-      })
-    ),
-    cta: z.object({
-      primary: z.string(),
-      secondary: z.string(),
-    }),
-    protectedLabel: z.string(),
-    donorDisclaimer: z.string(),
+    funding: z.array(z.string()),
+    recipientName: z.string(),
+    stripeDescription: z.string(),
   }),
 });
 

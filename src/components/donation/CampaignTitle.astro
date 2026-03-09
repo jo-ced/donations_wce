@@ -1,5 +1,6 @@
 ---
 import Label from "../Label.astro";
+import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
     title: string;
@@ -7,22 +8,24 @@ interface Props {
     organizerName: string;
     organizerRole: string;
     intro?: string;
+    lang: Lang;
 }
 
-const { title, subtitle, organizerName, organizerRole, intro } = Astro.props;
+const { title, subtitle, organizerName, organizerRole, intro, lang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <section
     class="px-5 pt-4 pb-10 border-b border-border lg:flex lg:justify-between lg:items-center"
 >
     <div>
-        <Label>Kampagne</Label>
+        <Label>{t('section.campaign')}</Label>
         <h1 class="text-2xl lg:text-3xl font-bold text-text leading-snug m-0">{title}</h1>
         <p class="mt-2 text-base text-text-mid m-0">{subtitle}</p>
     </div>
     <div>
         {intro && <p class="mt-3 text-[15px] leading-relaxed text-text-mid m-0">{intro}</p>}
-        <div class="mt-4 flex items-center gap-3">
+        <div class="mt-4 flex items-center gap-3 lg:min-w-92 lg:justify-end">
             <img
                 src="/dream-of-hearing/images/logo/wce-logo.webp"
                 alt={organizerName}

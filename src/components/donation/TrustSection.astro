@@ -1,11 +1,14 @@
 ---
 import Label from "../Label.astro";
+import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
     items: { icon: string; label: string; description: string }[];
+    lang: Lang;
 }
 
-const { items } = Astro.props;
+const { items, lang } = Astro.props;
+const t = useTranslations(lang);
 
 const icons: Record<string, string> = {
     fees: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -26,7 +29,7 @@ const icons: Record<string, string> = {
 ---
 
 <section class="px-5 py-4">
-    <Label>Vertrauen</Label>
+    <Label>{t('section.trust')}</Label>
     <div class="flex gap-2.5">
         {
             items.map((item) => (
@@ -35,10 +38,10 @@ const icons: Record<string, string> = {
                         class="w-8 h-8 rounded-full bg-accent-soft mx-auto mb-2 flex items-center justify-center text-accent"
                         set:html={icons[item.icon] ?? icons.encrypted}
                     />
-                    <span class="text-[10px] font-semibold text-text-mid block leading-tight">
+                    <span class="text-[11px] font-semibold text-text-mid block leading-tight">
                         {item.label}
                     </span>
-                    <span class="text-[9px] text-text-light block mt-0.5 leading-tight">
+                    <span class="text-[10px] text-text-light block mt-0.5 leading-tight">
                         {item.description}
                     </span>
                 </div>

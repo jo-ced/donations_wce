@@ -1,9 +1,18 @@
 ---
 import Label from '../Label.astro';
+import { useTranslations, type Lang } from '../../i18n/utils';
+
+interface Props {
+  intro?: string;
+  lang: Lang;
+}
+
+const { intro, lang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <section class="px-5 py-4 border-b border-border" x-data="{ expanded: false }">
-  <Label>Geschichte</Label>
+  <Label>{t('section.story')}</Label>
   <div class="relative">
     <div
       :class="expanded ? '' : 'max-h-44 overflow-hidden'"
@@ -21,7 +30,7 @@ import Label from '../Label.astro';
     class="mt-3 bg-transparent border-none p-0 text-sm font-semibold cursor-pointer flex items-center gap-1"
     style="color: #c2552d;"
   >
-    <span x-text="expanded ? 'Weniger lesen' : 'Mehr lesen'">Mehr lesen</span>
+    <span x-text={`expanded ? '${t('story.readLess')}' : '${t('story.readMore')}'`}>{t('story.readMore')}</span>
     <svg
       width="12" height="12" viewBox="0 0 24 24" fill="none"
       stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"

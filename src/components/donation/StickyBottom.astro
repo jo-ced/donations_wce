@@ -1,12 +1,14 @@
 ---
+import { useTranslations, type Lang } from "../../i18n/utils";
+
 interface Props {
-    primaryLabel: string;
-    secondaryLabel: string;
     goal: number;
     currency: string;
+    lang: Lang;
 }
 
-const { primaryLabel, secondaryLabel, goal, currency } = Astro.props;
+const { goal, currency, lang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <div
@@ -20,16 +22,16 @@ const { primaryLabel, secondaryLabel, goal, currency } = Astro.props;
                 {currency}<span x-text="raised.toLocaleString()">0</span>
             </span>
             <span class="text-[13px] text-text-light">
-                von {currency}{(goal / 1000).toFixed(1)}T &middot; <span
+                {t('progress.of')} {currency}{(goal / 1000).toFixed(1)}{t('progress.thousands')} &middot; <span
                     class="text-text"
                     x-text="(Math.min((raised / goal) * 100, 100)).toFixed(1).replace('.', ',') + '%'"
                     >0,0%</span
                 >
             </span>
         </div>
-        <div class="h-1.5 rounded-[3px] bg-accent-soft">
+        <div class="h-1.5 rounded-[3px] bg-accent-soft my-1">
             <div
-                class="h-full rounded-[3px] bg-accent transition-[width] duration-600 ease-out"
+                class="h-full rounded-[3px] bg-[#c2552d] transition-[width] duration-600 ease-out"
                 :style="`width: ${Math.min(Math.round((raised / goal) * 100), 100)}%`"
             >
             </div>
@@ -39,12 +41,12 @@ const { primaryLabel, secondaryLabel, goal, currency } = Astro.props;
         <button
             onclick="window.dispatchEvent(new CustomEvent('trigger-share'))"
             class="flex-1 px-5 py-3 rounded-[10px] text-[15px] font-semibold cursor-pointer bg-transparent border border-border text-text-mid"
-            >{secondaryLabel}</button
+            >{t('cta.share')}</button
         >
         <button
             onclick="window.dispatchEvent(new CustomEvent('open-stripe'))"
             class="flex-1 px-5 py-3 rounded-[10px] text-[15px] font-semibold tracking-[0.3px] cursor-pointer border-none bg-accent text-white"
-            >{primaryLabel}</button
+            >{t('cta.donate')}</button
         >
     </div>
 </div>

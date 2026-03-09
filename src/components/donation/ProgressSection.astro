@@ -1,13 +1,15 @@
 ---
 import Label from "../Label.astro";
+import { useTranslations, type Lang } from "../../i18n/utils";
 
 interface Props {
     goal: number;
     currency: string;
-    protectedLabel: string;
+    lang: Lang;
 }
 
-const { goal, currency, protectedLabel } = Astro.props;
+const { goal, currency, lang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <section
@@ -15,13 +17,13 @@ const { goal, currency, protectedLabel } = Astro.props;
     x-data={`{ raised: 0, goal: ${goal} }`}
     @donations-loaded.window="raised = $event.detail.raised"
 >
-    <Label>Spendenfortschritt</Label>
+    <Label>{t('section.progress')}</Label>
     <div class="flex justify-between items-baseline mb-2">
         <span class="text-[26px] font-bold text-text">
             {currency}<span x-text="raised.toLocaleString()">0</span>
         </span>
-        <span class="text-xs text-text-light">
-            von {currency}{(goal / 1000).toFixed(1)}T &middot; <span
+        <span class="text-sm text-text-light">
+            {t('progress.of')} {currency}{(goal / 1000).toFixed(1)}T &middot; <span
                 class="text-text"
                 x-text="(Math.min((raised / goal) * 100, 100)).toFixed(1).replace('.', ',') + '%'"
                 >0,0%</span
@@ -30,22 +32,10 @@ const { goal, currency, protectedLabel } = Astro.props;
     </div>
     <div class="h-1.5 rounded-[3px] bg-accent-soft">
         <div
-            class="h-full rounded-[3px] bg-accent transition-[width] duration-600 ease-out"
+            class="h-full rounded-[3px] bg-[#c2552d] transition-[width] duration-800 ease-out"
+            style="width: 0px;"
             :style="`width: ${Math.min(Math.round((raised / goal) * 100), 100)}%`"
         >
         </div>
-    </div>
-    <div class="mt-2.5 flex gap-1.5 items-center">
-        <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="var(--color-text-light)"
-            stroke-width="2"
-        >
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-        </svg>
-        <span class="text-[11px] text-text-light">{protectedLabel}</span>
     </div>
 </section>

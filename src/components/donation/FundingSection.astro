@@ -1,27 +1,26 @@
 ---
 import Label from '../Label.astro';
+import { useTranslations, type Lang } from '../../i18n/utils';
+
+interface Props {
+  items: string[];
+  lang: Lang;
+}
+
+const { items, lang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <section class="px-5 py-4 border-b border-border">
-  <Label>Was gefördert wird</Label>
+  <Label>{t('section.funding')}</Label>
   <ul class="mt-2 space-y-2">
-    <li class="flex items-start gap-2">
-      <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" stroke-width="2">
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-      <span class="text-[13px] text-text">Der Kauf eines Spezial-Hörgerätes für Velid</span>
-    </li>
-    <li class="flex items-start gap-2">
-      <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" stroke-width="2">
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-      <span class="text-[13px] text-text">Mind. 3 Jahre Therapie durch Experten</span>
-    </li>
-    <li class="flex items-start gap-2">
-      <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" stroke-width="2">
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-      <span class="text-[13px] text-text">Medizinische Begleitbetreuung</span>
-    </li>
+    {items.map((item) => (
+      <li class="flex items-start gap-2">
+        <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-light)" stroke-width="2">
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        <span class="text-[13px] text-text">{item}</span>
+      </li>
+    ))}
   </ul>
 </section>

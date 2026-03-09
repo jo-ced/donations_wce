@@ -1,10 +1,16 @@
 ---
+import { languages } from '../../i18n/ui';
+import { useTranslations, getAlternatePaths, type Lang } from '../../i18n/utils';
+
 interface Props {
-    siteName: string;
+    lang: Lang;
+    currentPath: string;
 }
 
-const { siteName } = Astro.props;
+const { lang, currentPath } = Astro.props;
+const t = useTranslations(lang);
 const orgUrl = import.meta.env.PUBLIC_ORG_URL || 'https://worldculture-empowerment.international';
+const alternatePaths = getAlternatePaths(currentPath, lang);
 ---
 
 <nav
@@ -13,21 +19,38 @@ const orgUrl = import.meta.env.PUBLIC_ORG_URL || 'https://worldculture-empowerme
     <div class="flex items-center gap-2.5">
         <img
             src="/dream-of-hearing/images/logo/wce-logo.webp"
-            alt={siteName}
-            class="h-8 w-auto"
+            alt={t('nav.siteName')}
+            class="h-12 w-auto"
         />
         <span class="hidden lg:block text-sm font-semibold text-text-mid"
-            >WCE Spenden</span
+            >{t('nav.siteName')}</span
         >
     </div>
-    <a
-        href={orgUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="btn-charity"
-    >
-        Zum Verein &rarr;
-    </a>
+    <div class="flex items-center gap-2">
+
+        <!-- Link to WCE -->
+        <a
+            href={orgUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-text block mr-4"
+        >
+            {t('nav.toOrg')} &rarr;
+        </a>
+
+        <!-- Language switcher -->
+        <div class="flex items-center rounded-[6px] border border-border overflow-hidden text-[12px] font-semibold">
+            {Object.entries(languages).map(([l, label]) => (
+                <a
+                    href={alternatePaths[l as Lang]}
+                    class={`px-2.5 py-1.5 transition-colors ${l === lang ? 'bg-accent text-white' : 'text-text-mid hover:bg-accent-soft'}`}
+                    aria-current={l === lang ? 'true' : undefined}
+                >
+                    {l.toUpperCase()}
+                </a>
+            ))}
+        </div>
+    </div>
 </nav>
 
 <style>

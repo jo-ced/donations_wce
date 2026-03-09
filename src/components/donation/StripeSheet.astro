@@ -1,14 +1,37 @@
 ---
 // @ts-nocheck
-// Stripe Checkout payment sheet — collects meta only, redirects to Stripe
+import { useTranslations, type Lang } from "../../i18n/utils";
+
+interface Props {
+    orgName: string;
+    campaignName: string;
+    recipientName: string;
+    lang: Lang;
+}
+
+const { orgName, campaignName, recipientName, lang } = Astro.props;
+const t = useTranslations(lang);
+
 const amountsEnv = import.meta.env.PUBLIC_DONATION_AMOUNTS || '10,25,50,100';
 const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
+
+const i18n = {
+  errorGeneric: t('stripe.errorGeneric'),
+  errorConnection: t('stripe.errorConnection'),
+  donateButton: t('stripe.donateButton'),
+  yourNameFallback: t('stripe.yourNameFallback'),
+  displayNamePlaceholder: t('stripe.displayNamePlaceholder'),
+};
 ---
 
-<div
-    x-data="{
+<script is:inline define:vars={{ amounts, i18n }}>
+document.addEventListener('alpine:init', () => {
+  Alpine.data('donationSheet', () => ({
     open: false,
-    amounts: [{amounts.join(', ')}],
+    amounts: amounts,
+    donateButtonSuffix: i18n.donateButton,
+    yourNameFallback: i18n.yourNameFallback,
+    displayNamePlaceholder: i18n.displayNamePlaceholder,
     amount: 25,
     customAmount: '',
     donorName: '',
@@ -68,11 +91,11 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
       const baseCents = Math.round(base * 100);
       let coveredCents;
       if (this.paymentMethod === 'sepa_debit') {
-        coveredCents = baseCents + 35; // €0.35 Fixbetrag
+        coveredCents = baseCents + 35;
       } else if (this.paymentMethod === 'paypal') {
-        coveredCents = Math.round((baseCents + 35 + 10) / (1 - 0.0249 - 0.002)); // PayPal: 2.49% + €0.35 + Stripe fee: 0.2% + €0.10
+        coveredCents = Math.round((baseCents + 35 + 10) / (1 - 0.0249 - 0.002));
       } else {
-        coveredCents = Math.round((baseCents + 25) / (1 - 0.015)); // Kreditkarte: 1.5% + €0.25
+        coveredCents = Math.round((baseCents + 25) / (1 - 0.015));
       }
       return { fee: ((coveredCents - baseCents) / 100).toFixed(2) };
     },
@@ -100,15 +123,20 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
         if (data.url) {
           window.location.href = data.url;
         } else {
-          this.error = data.error || 'Ein Fehler ist aufgetreten.';
+          this.error = data.error || i18n.errorGeneric;
           this.processing = false;
         }
       } catch {
-        this.error = 'Verbindungsfehler. Bitte erneut versuchen.';
+        this.error = i18n.errorConnection;
         this.processing = false;
       }
     }
-  }"
+  }));
+});
+</script>
+
+<div
+    x-data="donationSheet"
     @open-stripe.window="const s = $refs.sheet; if (s) { s.style.transition = ''; s.style.transform = ''; } open = true; processing = false; error = ''; donorName = ''; customAmount = ''; amount = 25; shareOnList = true; displayName = ''; coverFees = false; paymentMethod = 'sepa_debit';"
     class="fixed inset-0 z-50 flex flex-col justify-end pointer-events-none"
 >
@@ -127,7 +155,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
     >
     </div>
 
-    <!-- Sheet panel — animated outer (no overflow), inner div scrolls -->
+    <!-- Sheet panel -->
     <div
         x-show="open"
         x-cloak
@@ -141,7 +169,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
         class="relative flex flex-col bg-white rounded-t-[20px] max-h-[92vh] max-w-lg mx-auto w-full shadow-[0_-8px_40px_rgba(0,0,0,0.12)] pointer-events-auto"
         style="will-change: transform;"
     >
-        <!-- Handle bar — drag target to close -->
+        <!-- Handle bar -->
         <div
             class="flex justify-center pt-3 pb-2 flex-shrink-0 touch-none select-none cursor-grab active:cursor-grabbing"
             @touchstart="dragStart($event)"
@@ -165,18 +193,19 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                         <p
                             class="text-[11px] text-[#9e9a93] font-semibold uppercase tracking-[0.8px]"
                         >
-                            Spende an
+                            {t('stripe.donateTo')}
                         </p>
                         <p
                             class="text-[15px] font-semibold text-[#2c2a26] mt-0.5 leading-snug"
                         >
-                            Worldculture Empowerment e.V. - Velids Traum vom Hören
+                            {campaignName}
                         </p>
                     </div>
                 </div>
                 <button
                     @click="open = false"
                     class="w-8 h-8 rounded-full bg-[#f5f4f0] flex items-center justify-center text-[#6b6760] hover:bg-[#e8e6e0] transition-colors mt-0.5 flex-shrink-0"
+                    aria-label="Close"
                 >
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
                         <path
@@ -193,7 +222,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                 <p
                     class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px] mb-2"
                 >
-                    Betrag
+                    {t('stripe.amount')}
                 </p>
                 <div class="grid grid-cols-4 gap-2 mb-2.5">
                     <template x-for="a in amounts" :key="a">
@@ -211,7 +240,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                     >
                     <input
                         type="number"
-                        placeholder="Eigener Betrag"
+                        placeholder={t('stripe.customAmount')}
                         x-model="customAmount"
                         @input="if (customAmount) amount = 0"
                         class="w-full pl-7 pr-4 py-2.5 rounded-[8px] border border-[#d4d0c8] text-[16px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors bg-transparent"
@@ -226,7 +255,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                 <p
                     class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px] mb-2"
                 >
-                    Zahlungsmethode
+                    {t('stripe.paymentMethod')}
                 </p>
                 <div class="grid grid-cols-3 gap-2">
                     <!-- Credit Card -->
@@ -250,10 +279,10 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                             <path d="M2 10h20"></path>
                             <path d="M6 15h2M11 15h4" stroke-width="1.5"></path>
                         </svg>
-                        <span>Kreditkarte</span>
+                        <span>{t('stripe.creditCard')}</span>
                     </button>
 
-                    <!-- SEPA Lastschrift -->
+                    <!-- SEPA Direct Debit -->
                     <button
                         @click="paymentMethod = 'sepa_debit'"
                         :class="paymentMethod === 'sepa_debit' ? 'bg-[#2c2a26] text-white border-[#2c2a26]' : 'bg-white text-[#6b6760] border-[#d4d0c8] hover:border-[#a8a298]'"
@@ -261,7 +290,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                     >
                         <span
                             class="bg-[#e8f5e9] text-[#2e7d32] absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap transition-colors"
-                            >Günstigste</span
+                            >{t('stripe.cheapest')}</span
                         >
                         <svg
                             width="20"
@@ -278,7 +307,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                             <path d="M5 6l7-3 7 3"></path>
                             <path d="M5 10v11M9 10v11M15 10v11M19 10v11"></path>
                         </svg>
-                        <span>Lastschrift</span>
+                        <span>{t('stripe.directDebit')}</span>
                     </button>
 
                     <!-- PayPal -->
@@ -304,7 +333,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                                 d="M10.703 8.638a.795.795 0 0 1 .786-.672h4.366c.517 0 1 .033 1.445.103.127.02.25.043.37.068l.208.046c.153.07.298.148.435.233.158-.997.006-1.676-.546-2.29-.605-.67-1.696-.958-3.092-.958H9.818a.795.795 0 0 0-.786.672L7.29 17.26a.476.476 0 0 0 .47.55H10.6l.762-4.827.341-2.344z"
                             ></path>
                         </svg>
-                        <span>PayPal</span>
+                        <span>{t('stripe.paypal')}</span>
                     </button>
                 </div>
             </div>
@@ -316,13 +345,12 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                 <p
                     class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px] mb-3"
                 >
-                    Spendenliste
+                    {t('stripe.donorList')}
                 </p>
 
-                <!-- Donor name -->
                 <input
                     type="text"
-                    placeholder="Ihr Name"
+                    placeholder={t('stripe.yourName')}
                     x-model="donorName"
                     class="w-full px-3 py-2.5 rounded-[10px] border border-[#d4d0c8] text-[16px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors bg-transparent mb-3"
                 />
@@ -360,10 +388,10 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                         <p
                             class="text-[13px] font-medium text-[#2c2a26] leading-snug"
                         >
-                            Meinen Namen in der Spendenliste anzeigen
+                            {t('stripe.showOnList')}
                         </p>
                         <p class="text-[11px] text-[#9e9a93] mt-0.5">
-                            Ihr Name wird öffentlich auf dieser Seite angezeigt
+                            {t('stripe.namePublic')}
                         </p>
                     </div>
                 </label>
@@ -380,15 +408,15 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                 >
                     <input
                         type="text"
-                        :placeholder="autoDisplayName || 'Anzeigename (z.B. Sarah L.)'"
+                        :placeholder="autoDisplayName || displayNamePlaceholder"
                         x-model="displayName"
                         class="w-full px-3 py-2.5 rounded-[10px] border border-[#d4d0c8] text-[16px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors"
                     />
                     <p class="text-[11px] text-[#9e9a93] mt-1.5 ml-0.5">
-                        Leer lassen, um
+                        {t('stripe.leaveEmpty')}
                         <span
                             class="text-[#6b6760] font-medium"
-                            x-text="autoDisplayName || 'Ihren Namen'"></span> zu verwenden
+                            x-text="autoDisplayName || yourNameFallback"></span>{t('stripe.toUse') ? ` ${t('stripe.toUse')}` : ''}
                     </p>
                 </div>
             </div>
@@ -429,7 +457,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                         <p
                             class="text-[13px] font-medium text-[#2c2a26] leading-snug flex items-center gap-2 flex-wrap"
                         >
-                            Transaktionsgebühren übernehmen
+                            {t('stripe.coverFees')}
                             <span
                                 x-show="finalAmount >= 1"
                                 x-text="'+€\u2009' + feeInfo.fee"
@@ -438,7 +466,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                             ></span>
                         </p>
                         <p class="text-[11px] text-[#9e9a93] mt-0.5">
-                            So kommt der volle Betrag bei Velid an
+                            {t('stripe.feesExplain').split('–')[0].trim()}
                         </p>
                     </div>
                 </label>
@@ -465,7 +493,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                         <path d="M6 9l6 6 6-6"></path>
                     </svg>
                     <span
-                        x-text="showFeeInfo ? 'Weniger anzeigen' : 'Mehr erfahren'"
+                        x-text={`showFeeInfo ? '${t('stripe.showLess')}' : '${t('stripe.learnMore')}'`}
                     ></span>
                 </button>
 
@@ -480,18 +508,14 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                     class="mt-3 bg-[#f8f7f4] rounded-[10px] p-3.5 text-[11px] text-[#6b6760] space-y-2.5"
                 >
                     <p class="text-[#2c2a26] font-medium text-[12px]">
-                        Warum fallen Gebühren an?
+                        {t('stripe.whyFees')}
                     </p>
                     <p class="leading-relaxed">
-                        Jede Online-Zahlung wird über einen
-                        Zahlungsdienstleister abgewickelt, der dafür eine Gebühr
-                        erhebt. Diese wird direkt vom überwiesenen Betrag
-                        abgezogen – wenn Sie sie nicht übernehmen, kommt
-                        entsprechend weniger bei Velid an.
+                        {t('stripe.feesExplain')}
                     </p>
                     <div class="h-px bg-[#ece9e3]"></div>
                     <p class="text-[#2c2a26] font-medium text-[12px]">
-                        Gebühren nach Zahlungsmethode
+                        {t('stripe.feesByMethod')}
                     </p>
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
@@ -514,7 +538,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                                         rx="2.5"></rect>
                                     <path d="M2 10h20"></path>
                                 </svg>
-                                Kreditkarte
+                                {t('stripe.creditCard')}
                             </span>
                             <span
                                 class="tabular-nums font-medium text-[#2c2a26]"
@@ -537,7 +561,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                                         d="M3 21h18M3 10h18M5 6l7-3 7 3M5 10v11M9 10v11M15 10v11M19 10v11"
                                     ></path>
                                 </svg>
-                                SEPA-Lastschrift
+                                {t('stripe.sepa')}
                             </span>
                             <span
                                 class="tabular-nums font-medium text-[#2c2a26]"
@@ -559,7 +583,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                                         d="M19.554 9.488c.121.76.07 1.607-.195 2.496-.812 2.814-3.18 3.787-6.32 3.787h-.408a.795.795 0 0 0-.785.672l-.756 4.783a.419.419 0 0 1-.413.358H8.401a.35.35 0 0 1-.345-.404l.68-4.31.042-.198a.795.795 0 0 1 .785-.672h.408c2.45 0 4.37-.695 4.932-2.706.234-.832.113-1.527-.2-2.013.787.335 1.202.675 1.202 1.307.153.07.298.148.435.233.516-.233.994-.39 1.214-.066z"
                                     ></path>
                                 </svg>
-                                PayPal
+                                {t('stripe.paypal')}
                             </span>
                             <span
                                 class="tabular-nums font-medium text-[#2c2a26] text-right"
@@ -568,15 +592,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                         </div>
                     </div>
                     <div class="h-px bg-[#ece9e3]"></div>
-                    <p class="leading-relaxed">
-                        Beispiel: Bei <strong class="text-[#2c2a26]"
-                            >25 €</strong
-                        > per SEPA-Lastschrift kommen ohne Gebührenübernahme nur <strong
-                            class="text-[#2c2a26]">24,65 €</strong
-                        > an – mit Übernahme die vollen <strong
-                            class="text-[#2c2a26]">25,00 €</strong
-                        >.
-                    </p>
+                    <p class="leading-relaxed" set:html={t('stripe.feeExample')} />
                 </div>
             </div>
 
@@ -601,7 +617,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                         x-show="!processing"
                         x-text="(coverFees && finalAmount >= 1
                         ? (finalAmount + parseFloat(feeInfo.fee)).toFixed(2).replace(/\.00$/, '')
-                        : finalAmount) + ' € spenden'"
+                        : finalAmount) + ' ' + donateButtonSuffix"
                     ></span>
                     <span
                         x-show="processing"
@@ -625,7 +641,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                             ></path>
                         </svg>
-                        Weiterleitung zu Stripe…
+                        {t('stripe.redirecting')}
                     </span>
                 </button>
 
@@ -642,7 +658,7 @@ const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
                         ></path>
                     </svg>
                     <span class="text-[11px] text-[#c4c0b8]"
-                        >Sichere Zahlung über</span
+                        >{t('stripe.securePayment')}</span
                     >
                     <svg
                         viewBox="0 0 60 25"

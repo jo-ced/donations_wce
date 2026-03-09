@@ -1,16 +1,19 @@
 ---
 import Label from '../Label.astro';
+import { useTranslations, type Lang } from '../../i18n/utils';
 
 interface Props {
   name: string;
   location: string;
+  lang: Lang;
 }
 
-const { name, location } = Astro.props;
+const { name, location, lang } = Astro.props;
+const t = useTranslations(lang);
 ---
 
 <section class="px-5 py-4 border-b border-border">
-  <Label>Organisator</Label>
+  <Label>{t('section.organizer')}</Label>
   <div class="flex items-center gap-3">
     <img
       src="/dream-of-hearing/images/logo/wce-logo.webp"

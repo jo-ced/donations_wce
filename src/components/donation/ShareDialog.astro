@@ -1,10 +1,14 @@
 ---
+import { useTranslations, type Lang } from '../../i18n/utils';
+
 interface Props {
   title: string;
   text: string;
+  lang: Lang;
 }
 
-const { title, text } = Astro.props;
+const { title, text, lang } = Astro.props;
+const t = useTranslations(lang);
 const shareUrl = Astro.url.href;
 ---
 
@@ -13,8 +17,8 @@ const shareUrl = Astro.url.href;
   <div class="share-backdrop"></div>
   <div class="share-sheet">
     <div class="share-header">
-      <span class="share-title">Kampagne teilen</span>
-      <button id="share-close" class="share-close" aria-label="Schließen">&times;</button>
+      <span class="share-title">{t('share.title')}</span>
+      <button id="share-close" class="share-close" aria-label={t('share.close')}>&times;</button>
     </div>
     <div class="share-options">
       <button class="share-option" data-action="whatsapp">
@@ -35,10 +39,10 @@ const shareUrl = Astro.url.href;
       </button>
       <button class="share-option" data-action="copy">
         <svg class="share-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        <span>Link kopieren</span>
+        <span>{t('share.copyLink')}</span>
       </button>
     </div>
-    <div id="share-copied" class="share-copied" aria-hidden="true">Link kopiert!</div>
+    <div id="share-copied" class="share-copied" aria-hidden="true">{t('share.copied')}</div>
   </div>
 </div>
 
@@ -46,12 +50,10 @@ const shareUrl = Astro.url.href;
   const shareData = { title, text, url: shareUrl };
 
   function triggerShare() {
-    // Use native Web Share API on supported devices (mobile)
     if (navigator.share) {
       navigator.share(shareData).catch(() => {});
       return;
     }
-    // Desktop fallback: show dialog
     openDialog();
   }
 
@@ -65,21 +67,13 @@ const shareUrl = Astro.url.href;
     dialog.setAttribute('aria-hidden', 'true');
   }
 
-  // Listen for share events from any button
   window.addEventListener('trigger-share', triggerShare);
-
-  // Close button
   document.getElementById('share-close').addEventListener('click', closeDialog);
-
-  // Backdrop click
   document.querySelector('.share-backdrop').addEventListener('click', closeDialog);
-
-  // Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeDialog();
   });
 
-  // Share option actions
   document.querySelectorAll('.share-option').forEach((btn) => {
     btn.addEventListener('click', () => {
       const action = btn.dataset.action;
