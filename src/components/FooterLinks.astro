@@ -1,16 +1,12 @@
 ---
-interface Props {
-  siteName: string;
-}
-
-const { siteName } = Astro.props;
+const orgUrl = import.meta.env.PUBLIC_ORG_URL || 'https://worldculture-empowerment.international';
 ---
 
 <div class="py-3 px-5 text-center text-[12px] text-text-light">
   <div class="mb-1">
-    <a href="http://worldculture-empowerment.international/satzung-des-vereins" class="mr-5 no-underline hover:text-text">Satzung des Vereins</a>
-    <a href="http://worldculture-empowerment.international/impressum" class="mr-5 no-underline hover:text-text">Impressum</a>
-    <a href="http://worldculture-empowerment.international/datenschutzerklarung" class="no-underline hover:text-text">Datenschutzerklärung</a>
+    <a href={`${orgUrl}/satzung-des-vereins`} class="mr-5 no-underline hover:text-text">Satzung des Vereins</a>
+    <a href={`${orgUrl}/impressum`} class="mr-5 no-underline hover:text-text">Impressum</a>
+    <a href={`${orgUrl}/datenschutzerklarung`} class="no-underline hover:text-text">Datenschutzerklärung</a>
   </div>
 </div>
 

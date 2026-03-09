@@ -27,3 +27,9 @@ pnpm-debug.log*
 public/**/*.mp4
 public/**/*.webm
 public/**/*.mov
+
+# Vercel and VSCode etc.
+.vercel/
+.vscode/
+.astro/
+.claude/

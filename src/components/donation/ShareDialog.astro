@@ -42,7 +42,7 @@ const shareUrl = Astro.url.href;
   </div>
 </div>
 
-<script define:vars={{ title, text, shareUrl }}>
+<script is:inline define:vars={{ title, text, shareUrl }}>
   const shareData = { title, text, url: shareUrl };
 
   function triggerShare() {

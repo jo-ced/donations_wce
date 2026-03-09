@@ -4,6 +4,7 @@ interface Props {
 }
 
 const { siteName } = Astro.props;
+const orgUrl = import.meta.env.PUBLIC_ORG_URL || 'https://worldculture-empowerment.international';
 ---
 
 <nav
@@ -20,7 +21,7 @@ const { siteName } = Astro.props;
         >
     </div>
     <a
-        href="https://worldculture-empowerment.international"
+        href={orgUrl}
         target="_blank"
         rel="noopener noreferrer"
         class="btn-charity"

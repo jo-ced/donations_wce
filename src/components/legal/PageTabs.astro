@@ -1,5 +1,5 @@
 ---
-const tabs = ['AGB', 'Datenschutz', 'Cookies', 'Barrierefreiheit'];
+// @ts-nocheck
 ---
 
 <div class="flex border-b border-border px-3 overflow-x-auto">
@@ -7,9 +7,7 @@ const tabs = ['AGB', 'Datenschutz', 'Cookies', 'Barrierefreiheit'];
     <button
       x-text="tab"
       @click="activePage = tab"
-      :class="activePage === tab
-        ? 'border-b-2 border-accent font-bold text-text'
-        : 'border-b-2 border-transparent font-medium text-text-light'"
+      :class="activePage === tab ? 'border-b-2 border-accent font-bold text-text' : 'border-b-2 border-transparent font-medium text-text-light'"
       class="px-3 py-2.5 bg-transparent text-[11px] cursor-pointer whitespace-nowrap border-0 border-b-2"
     ></button>
   </template>

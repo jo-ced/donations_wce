@@ -1,6 +1,8 @@
 import Stripe from 'stripe';
 
-export const CAMPAIGN_GOAL = 2000000; // cents
+export const CAMPAIGN_GOAL = import.meta.env.PUBLIC_CAMPAIGN_GOAL ?
+  parseInt(import.meta.env.PUBLIC_CAMPAIGN_GOAL, 10) :
+  2000000; // cents
 
 export interface DonationItem {
   id: string;
@@ -13,7 +15,6 @@ export interface DonationItem {
     name: string | null;
     anonymous: boolean;
   };
-  metadata: Record<string, string>;
 }
 
 export interface DonationsResponse {
@@ -29,7 +30,16 @@ export interface DonationsResponse {
   };
 }
 
+let cache: { data: DonationsResponse; at: number } | null = null;
+const TTL = 10_000; // 10 seconds
+
+export function clearCache() {
+  cache = null;
+}
+
 export async function fetchDonations(): Promise<DonationsResponse> {
+  if (cache && Date.now() - cache.at < TTL) return cache.data;
+
   const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
   const sessions = await stripe.checkout.sessions.list({
     limit: 100,
@@ -52,11 +62,10 @@ export async function fetchDonations(): Promise<DonationsResponse> {
           name: showOnList ? displayName : null,
           anonymous: !showOnList,
         },
-        metadata: s.metadata || {},
       };
     });
 
-  return {
+  const result: DonationsResponse = {
     object: 'list',
     url: '/api/donations.json',
     has_more: false,
@@ -68,6 +77,9 @@ export async function fetchDonations(): Promise<DonationsResponse> {
       currency: 'eur',
     },
   };
+
+  cache = { data: result, at: Date.now() };
+  return result;
 }
 
 const currencySymbols: Record<string, string> = {

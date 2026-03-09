@@ -8,6 +8,7 @@ import ProgressSection from "../../../components/donation/ProgressSection.astro"
 import Story from "../../../components/donation/Story.astro";
 import DonationsList from "../../../components/donation/DonationsList.astro";
 import OrganizerSection from "../../../components/donation/OrganizerSection.astro";
+import FundingSection from "../../../components/donation/FundingSection.astro";
 import TrustSection from "../../../components/donation/TrustSection.astro";
 import StickyBottom from "../../../components/donation/StickyBottom.astro";
 import FooterLinks from "../../../components/FooterLinks.astro";
@@ -83,6 +84,7 @@ const goal = CAMPAIGN_GOAL / 100;
                         {data.cta.secondary}
                     </button>
                 </div>
+                <FundingSection />
                 <OrganizerSection
                     name={data.organizer.name}
                     location={data.organizer.location}

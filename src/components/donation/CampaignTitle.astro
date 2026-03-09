@@ -1,6 +1,5 @@
 ---
 import Label from "../Label.astro";
-import Avatar from "../Avatar.astro";
 
 interface Props {
     title: string;
@@ -13,18 +12,22 @@ const { title, subtitle, organizerName, organizerRole } = Astro.props;
 ---
 
 <section
-    class="px-5 pt-4 pb-8 border-b border-border lg:flex lg:justify-between lg:items-end"
+    class="px-5 pt-4 pb-10 border-b border-border lg:flex lg:justify-between lg:items-center"
 >
     <div>
         <Label>Kampagne</Label>
-        <h1 class="text-lg font-bold text-text leading-snug m-0">{title}</h1>
-        <p class="mt-1.5 text-sm text-text-mid m-0">{subtitle}</p>
+        <h1 class="text-2xl lg:text-3xl font-bold text-text leading-snug m-0">{title}</h1>
+        <p class="mt-2 text-base text-text-mid m-0">{subtitle}</p>
     </div>
     <div>
-        <div class="mt-4 flex items-center gap-2.5">
-            <Avatar size={32} name={organizerName} />
+        <div class="mt-4 flex items-center gap-3">
+            <img
+                src="/dream-of-hearing/images/logo/wce-logo.webp"
+                alt={organizerName}
+                class="w-10 h-10 rounded-full object-cover shrink-0"
+            />
             <div>
-                <span class="text-[13px] font-semibold text-text block"
+                <span class="text-sm font-semibold text-text block"
                     >{organizerName}</span
                 >
                 <span class="text-[12px] text-text-light block mt-0.5"

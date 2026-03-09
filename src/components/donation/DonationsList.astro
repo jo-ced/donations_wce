@@ -6,20 +6,20 @@ interface Props {
     disclaimer: string;
 }
 
-const { currency, disclaimer } = Astro.props;
+const { disclaimer } = Astro.props;
 ---
 
 <section
     class="px-5 py-4 border-b border-border"
     x-data={`{
-      activeTab: 'Alle',
+      activeTab: 'Neuste',
       showAll: 10,
       showTop: 10,
       loading: true,
       donors: [],
 
       get visibleDonors() {
-        return this.donors.filter(d => !d.anonymous);
+        return this.donors.filter(d => !d.anonymous).sort((a, b) => b.created - a.created);
       },
       get topDonors() {
         return [...this.visibleDonors].sort((a, b) => b.amount - a.amount);
@@ -70,7 +70,7 @@ const { currency, disclaimer } = Astro.props;
             >
         </Label>
         <div class="flex gap-1">
-            <template x-for="tab in ['Alle', 'Top']">
+            <template x-for="tab in ['Neuste', 'Top']">
                 <button
                     x-text="tab"
                     @click="activeTab = tab"
@@ -139,9 +139,9 @@ const { currency, disclaimer } = Astro.props;
             </div>
         </template>
 
-        <!-- Show more / less (Alle tab) -->
+        <!-- Show more / less (Neuste tab) -->
         <button
-            x-show="activeTab === 'Alle' && showAll < visibleDonors.length"
+            x-show="activeTab === 'Neuste' && showAll < visibleDonors.length"
             @click="showAll = Math.min(showAll + 10, visibleDonors.length)"
             class="mt-3 bg-transparent border-none p-0 text-xs font-semibold cursor-pointer flex items-center gap-1"
             style="color: #c2552d;"
@@ -161,7 +161,7 @@ const { currency, disclaimer } = Astro.props;
             >
         </button>
         <button
-            x-show="activeTab === 'Alle' && showAll > 10"
+            x-show="activeTab === 'Neuste' && showAll > 10"
             @click="showAll = 10"
             class="mt-3 bg-transparent border-none p-0 text-xs font-semibold cursor-pointer flex items-center gap-1"
             style="color: #c2552d;"

@@ -4,9 +4,9 @@ interface Props {
 }
 
 const { basePath } = Astro.props;
-
+const orgUrl = import.meta.env.PUBLIC_ORG_URL || 'https://worldculture-empowerment.international';
 const externalVideoBase =
-    "https://worldculture-empowerment.international/website-template/images/projects/dream-of-hearing";
+    `${orgUrl}/website-template/images/projects/dream-of-hearing`;
 
 const items = [
     {

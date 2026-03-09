@@ -1,5 +1,5 @@
 ---
-import { getEntry } from "astro:content";
+import { getCollection, render } from "astro:content";
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import NavBar from "../../../components/donation/NavBar.astro";
 import ProductGallery from "../../../components/donation/ProductGallery.astro";
@@ -8,6 +8,7 @@ import ProgressSection from "../../../components/donation/ProgressSection.astro"
 import Story from "../../../components/donation/Story.astro";
 import DonationsList from "../../../components/donation/DonationsList.astro";
 import OrganizerSection from "../../../components/donation/OrganizerSection.astro";
+import FundingSection from "../../../components/donation/FundingSection.astro";
 import TrustSection from "../../../components/donation/TrustSection.astro";
 import StickyBottom from "../../../components/donation/StickyBottom.astro";
 import FooterLinks from "../../../components/FooterLinks.astro";
@@ -15,9 +16,11 @@ import StripeSheet from "../../../components/donation/StripeSheet.astro";
 import ShareDialog from "../../../components/donation/ShareDialog.astro";
 import { CAMPAIGN_GOAL, getCurrencySymbol } from "../../../data/donations";
 
-const project = await getEntry("projects", "velids-traum-vom-hoeren");
+const allProjects = await getCollection("projects");
+const project = allProjects.find(p => p.id === "velids-traum-vom-hoeren");
 if (!project) throw new Error("Project not found");
 const { data } = project;
+const { Content } = await render(project);
 
 const currency = getCurrencySymbol("eur");
 const goal = CAMPAIGN_GOAL / 100;
@@ -47,11 +50,9 @@ const goal = CAMPAIGN_GOAL / 100;
             <!-- Left column: gallery + story + donations -->
             <div>
                 <ProductGallery basePath="/dream-of-hearing" />
-                <Story
-                    intro={data.story.intro}
-                    body={data.story.body}
-                    image={data.story.image}
-                />
+                <Story intro={data.storyIntro}>
+                    <Content />
+                </Story>
                 <DonationsList
                     currency={currency}
                     disclaimer={data.donorDisclaimer}
@@ -83,6 +84,7 @@ const goal = CAMPAIGN_GOAL / 100;
                         {data.cta.secondary}
                     </button>
                 </div>
+                <FundingSection />
                 <OrganizerSection
                     name={data.organizer.name}
                     location={data.organizer.location}
