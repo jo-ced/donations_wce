@@ -47,7 +47,7 @@ export async function fetchDonations(): Promise<DonationsResponse> {
   });
 
   const data: DonationItem[] = sessions.data
-    .filter((s) => s.payment_status === 'paid')
+    .filter((s) => s.payment_status === 'paid' || (s.payment_status === 'unpaid' && s.metadata?.paymentMethod === 'sepa_debit'))
     .map((s) => {
       const showOnList = s.metadata?.showOnList === 'true';
       const displayName = s.metadata?.displayName || null;
