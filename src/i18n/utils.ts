@@ -10,16 +10,11 @@ export function getLangFromUrl(url: URL): Lang {
 
 export function useTranslations(lang: Lang) {
   return function t(key: keyof typeof ui[typeof defaultLang]): string {
-    const text =
+    return String(
       (ui[lang] as Record<string, string>)[key] ??
       (ui[defaultLang] as Record<string, string>)[key] ??
-      key;
-
-    // Ensure HTML line breaks are rendered: decode common encoded forms and convert newlines to <br>
-    return String(text)
-      .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
-      .replace(/\\n/g, '<br>')
-      .replace(/\r\n|\r/g, '\n'); // normalize CRLF; callers can handle \n or we already converted \n above
+      key
+    );
   };
 }
 

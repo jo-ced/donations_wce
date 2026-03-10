@@ -20,7 +20,6 @@ const i18n = {
   errorGeneric: t('stripe.errorGeneric'),
   errorConnection: t('stripe.errorConnection'),
   donateButton: t('stripe.donateButton'),
-  yourNameFallback: t('stripe.yourNameFallback'),
   displayNamePlaceholder: t('stripe.displayNamePlaceholder'),
 };
 ---
@@ -32,7 +31,6 @@ document.addEventListener('alpine:init', () => {
     amounts: amounts,
     qrUrl: '',
     donateButtonSuffix: i18n.donateButton,
-    yourNameFallback: i18n.yourNameFallback,
     displayNamePlaceholder: i18n.displayNamePlaceholder,
     amount: 25,
     customAmount: '',
@@ -382,8 +380,9 @@ window.__epcQr = (amount: number) => {
                             stroke-linecap="round"
                             stroke-linejoin="round"
                         >
-                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            <rect x="2" y="6" width="20" height="12" rx="2"/>
+                            <circle cx="12" cy="12" r="2"/>
+                            <path d="M6 12h.01M18 12h.01" stroke-width="2"/>
                         </svg>
                         <span>{t('stripe.bankTransfer')}</span>
                     </button>
@@ -464,12 +463,7 @@ window.__epcQr = (amount: number) => {
                         x-model="displayName"
                         class="w-full px-3 py-2.5 rounded-[10px] border border-[#d4d0c8] text-[16px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors"
                     />
-                    <p class="text-[12px] text-text-light mt-1.5 ml-0.5">
-                        {t('stripe.leaveEmpty')}
-                        <span
-                            class="text-text-mid font-medium"
-                            x-text="autoDisplayName || yourNameFallback"></span>{t('stripe.toUse') ? ` ${t('stripe.toUse')}` : ''}
-                    </p>
+                    <p class="text-[12px] text-text-light mt-1.5 ml-0.5" set:html={t('stripe.leaveEmpty')} />
                 </div>
             </div>
 
@@ -518,7 +512,7 @@ window.__epcQr = (amount: number) => {
                             ></span>
                         </p>
                         <p class="text-[12px] text-text-light mt-0.5">
-                            {t('stripe.feesExplainShort').split('–')[0].trim()}
+                            {t('stripe.feesExplainShort').trim()}
                         </p>
                     </div>
                 </label>
