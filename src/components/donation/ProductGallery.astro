@@ -40,11 +40,10 @@ const items = [
                             loading={i === 0 ? "eager" : "lazy"}
                         />
                     ) : (
-                        <>
+                        <div style={`position: relative; width: 100%; aspect-ratio: ${item.aspectRatio};`}>
                             <video
                                 src={item.src}
                                 class="gallery-media"
-                                style={`aspect-ratio: ${item.aspectRatio}`}
                                 playsinline
                                 loop
                                 preload="none"
@@ -53,7 +52,7 @@ const items = [
                             <div class="video-loader" aria-hidden="true" hidden>
                                 <div class="video-loader-spinner"></div>
                             </div>
-                        </>
+                        </div>
                     )}
                 </div>
             ))
@@ -543,11 +542,7 @@ const items = [
                     img.addEventListener("load", syncHeight, { once: true });
             });
             track.querySelectorAll("video").forEach((video) => {
-                video.addEventListener("loadedmetadata", () => {
-                    // Let the real video dimensions take over from the CSS placeholder ratio
-                    video.style.aspectRatio = "";
-                    syncHeight();
-                }, { once: true });
+                video.addEventListener("loadedmetadata", syncHeight, { once: true });
             });
 
             // Sync height on window resize
