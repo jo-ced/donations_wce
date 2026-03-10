@@ -1,0 +1,22 @@
+---
+import { useTranslations, type Lang } from '../i18n/utils';
+
+interface Props {
+    lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useTranslations(lang);
+---
+<a href="/" alt={t('nav.siteName')}>
+    <div class="flex items-center gap-2.5">
+        <img
+            src="/dream-of-hearing/images/logo/wce-logo.webp"
+            alt={t('nav.siteName')}
+            class="h-12 w-auto"
+        />
+        <span class="hidden lg:block text-sm font-semibold text-text-mid"
+            >{t('nav.siteName')}</span
+        >
+    </div>
+</a>
