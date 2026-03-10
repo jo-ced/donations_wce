@@ -53,8 +53,8 @@ export const ui = {
     'stripe.creditCard': 'Kreditkarte',
     'stripe.directDebit': 'Lastschrift',
     'stripe.paypal': 'PayPal',
-    'stripe.cheapest': 'Günstigste',
-    'stripe.donorList': 'Spendenliste',
+    'stripe.cheapest': 'Am meisten kommt an',
+    'stripe.donorList': 'Spenderliste',
     'stripe.yourName': 'Ihr Name',
     'stripe.showOnList': 'Meinen Namen in der Spendenliste anzeigen',
     'stripe.namePublic': 'Ihr Name wird öffentlich auf dieser Seite angezeigt',
@@ -70,7 +70,8 @@ export const ui = {
     'stripe.feesExplain': 'Bei jeder Online-Zahlung fallen Gebühren des Zahlungsdienstleisters an – diese werden direkt vom überwiesenen Betrag abgezogen. Wir haben bereits alles getan, um diese so weit wie möglich zu reduzieren. Wir wollen an dieser Stelle Transparenz herstellen und die Möglichkeit bieten, die Kosten direkt zu übernehmen, damit alles ankommt.\n\nBei jeder Online-Zahlung fallen Gebühren an – das ist unvermeidbar. Ob beim Einkaufen, Abonnieren oder Spenden: Zahlungsdienstleister behalten einen Teil des überwiesenen Betrags ein, oft zwischen 2 und 4 Prozent. Auch Spendenplattformen bilden hier keine Ausnahme. Wir haben diese Seite deshalb eigens entwickelt, um so viele Zwischenstellen wie möglich zu umgehen und die Gebühren auf ein Minimum zu reduzieren. Dennoch lassen sich nicht alle vermeiden – und wir möchten dabei vollständig transparent sein. Deshalb geben wir einen Überblick und Ihnen die Möglichkeit, die verbleibenden Kosten freiwillig zu übernehmen, damit der volle Betrag ankommt.',
     'stripe.feesByMethod': 'Gebühren nach Zahlungsmethode',
     'stripe.sepa': 'SEPA-Lastschrift',
-    'stripe.feeExample': 'Beispiel: Bei <strong class="text-[#2c2a26]">25 €</strong> per SEPA-Lastschrift kommen ohne Gebührenübernahme nur <strong class="text-[#2c2a26]">24,65 €</strong> an – mit Übernahme die vollen <strong class="text-[#2c2a26]">25,00 €</strong>.',
+    'stripe.feeExample': 'Beispiel: Bei <strong class="text-[#2c2a26]">25 €</strong> per PayPal kommen ohne Gebührenübernahme nur <strong class="text-[#2c2a26]">24,03 €</strong> an – mit Übernahme die vollen <strong class="text-[#2c2a26]">25,00 €</strong>.',
+    'stripe.bankTransfer': 'Überweisung',
     'stripe.donateButton': '€ spenden',
     'stripe.redirecting': 'Weiterleitung zu Stripe…',
     'stripe.securePayment': 'Sichere Zahlung über',
@@ -89,6 +90,27 @@ export const ui = {
 
     // Donor list disclaimer
     'donations.disclaimer': 'Es werden nur Spender angezeigt, die der Namensveröffentlichung zugestimmt haben',
+
+    // Bank transfer
+    'bank.title': 'Oder per Banküberweisung',
+    'bank.noFees': '0 % Gebühren – 100 % kommt an',
+    'bank.noFeesBadge': 'Keine Gebühren',
+    'bank.iban': 'IBAN',
+    'bank.bic': 'BIC',
+    'bank.reference': 'Verwendungszweck',
+    'bank.copy': 'Kopieren',
+    'bank.copied': 'Kopiert!',
+    'bank.qrScan': 'Mit Banking-App scannen',
+    'bank.qrNoAmount': 'Betrag manuell eingeben',
+    'bank.donorListHint': 'Um in der Spendenliste zu erscheinen, füge „in Spendenliste aufführen" sowie deinen Namen zum Verwendungszweck hinzu.',
+
+    // Thank you page
+    'danke.pageTitle': 'Danke!',
+    'danke.heading': 'Vielen Dank!',
+    'danke.donationPrefix': 'Ihre Spende von',
+    'danke.donationSuffix': 'ist auf dem Weg zu Velid.',
+    'danke.appearsIn': 'erscheint in der Spenderliste.',
+    'danke.back': 'Zurück',
 
     // Footer
     'footer.articles': 'Satzung des Vereins',
@@ -158,6 +180,7 @@ export const ui = {
     'stripe.feesByMethod': 'Fees by payment method',
     'stripe.sepa': 'SEPA Direct Debit',
     'stripe.feeExample': 'Example: With <strong class="text-[#2c2a26]">€25</strong> via SEPA Direct Debit, only <strong class="text-[#2c2a26]">€24.65</strong> arrives without fee coverage – with coverage, the full <strong class="text-[#2c2a26]">€25.00</strong>.',
+    'stripe.bankTransfer': 'Transfer',
     'stripe.donateButton': '€ donate',
     'stripe.redirecting': 'Redirecting to Stripe…',
     'stripe.securePayment': 'Secure payment via',
@@ -176,6 +199,27 @@ export const ui = {
 
     // Donor list disclaimer
     'donations.disclaimer': 'Only donors who have consented to public display of their name are shown',
+
+    // Bank transfer
+    'bank.title': 'Or via bank transfer',
+    'bank.noFees': '0% fees – 100% reaches the recipient',
+    'bank.noFeesBadge': 'Free',
+    'bank.iban': 'IBAN',
+    'bank.bic': 'BIC',
+    'bank.reference': 'Reference',
+    'bank.copy': 'Copy',
+    'bank.copied': 'Copied!',
+    'bank.qrScan': 'Scan with banking app',
+    'bank.qrNoAmount': 'Enter amount manually',
+    'bank.donorListHint': 'To appear in the donor list, add "in Spendenliste aufführen" and your name to the reference.',
+
+    // Thank you page
+    'danke.pageTitle': 'Thank you!',
+    'danke.heading': 'Thank you!',
+    'danke.donationPrefix': 'Your donation of',
+    'danke.donationSuffix': 'is on its way to Velid.',
+    'danke.appearsIn': 'will appear in the donor list.',
+    'danke.back': 'Back',
 
     // Footer
     'footer.articles': 'Articles of Association',

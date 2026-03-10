@@ -3,6 +3,9 @@ export const prerender = false;
 
 import Stripe from 'stripe';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { useTranslations } from '../../../i18n/utils';
+
+const t = useTranslations('de');
 
 const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
 const sessionId = Astro.url.searchParams.get('session_id');
@@ -22,7 +25,7 @@ const displayName = session?.metadata?.displayName || null;
 const showOnList = session?.metadata?.showOnList === 'true';
 ---
 
-<BaseLayout title="Danke!" lang="de" noindex={true}>
+<BaseLayout title={t('danke.pageTitle')} lang="de" noindex={true}>
   <div class="min-h-screen bg-bg flex flex-col items-center justify-center px-6 text-center">
     <div class="max-w-md w-full">
       <div class="w-16 h-16 rounded-full bg-[#f0fdf4] flex items-center justify-center mb-4 mx-auto">
@@ -32,18 +35,18 @@ const showOnList = session?.metadata?.showOnList === 'true';
       </div>
 
       <p class="text-[18px] font-semibold text-[#2c2a26] mb-1">
-        Vielen Dank!
+        {t('danke.heading')}
       </p>
 
       {amount && (
-        <p class="text-[13px] text-[#9e9a93] mb-1">
-          Ihre Spende von <span class="font-semibold text-[#2c2a26]">€{amount}</span> ist auf dem Weg zu Velid.
+        <p class="text-[13px] text-text-light mb-1">
+          {t('danke.donationPrefix')} <span class="font-semibold text-[#2c2a26]">€{amount}</span> {t('danke.donationSuffix')}
         </p>
       )}
 
       {showOnList && displayName && (
-        <p class="text-[12px] text-[#9e9a93] mb-8">
-          <span class="font-medium text-text-mid">{displayName}</span> erscheint in der Spendenliste.
+        <p class="text-[12px] text-text-light mb-8">
+          <span class="font-medium text-text-mid">{displayName}</span> {t('danke.appearsIn')}
         </p>
       )}
 
@@ -55,7 +58,7 @@ const showOnList = session?.metadata?.showOnList === 'true';
         href="/projekte/dream-of-hearing"
         class="w-full py-3.5 rounded-[10px] bg-[#2c2a26] text-white text-[14px] font-semibold text-center block no-underline"
       >
-        Zurück
+        {t('danke.back')}
       </a>
     </div>
   </div>

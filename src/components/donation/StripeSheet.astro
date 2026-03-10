@@ -15,6 +15,7 @@ const t = useTranslations(lang);
 const amountsEnv = import.meta.env.PUBLIC_DONATION_AMOUNTS || '10,25,50,100';
 const amounts = amountsEnv.split(',').map((a: string) => parseInt(a, 10));
 
+
 const i18n = {
   errorGeneric: t('stripe.errorGeneric'),
   errorConnection: t('stripe.errorConnection'),
@@ -29,6 +30,7 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('donationSheet', () => ({
     open: false,
     amounts: amounts,
+    qrUrl: '',
     donateButtonSuffix: i18n.donateButton,
     yourNameFallback: i18n.yourNameFallback,
     displayNamePlaceholder: i18n.displayNamePlaceholder,
@@ -79,6 +81,14 @@ document.addEventListener('alpine:init', () => {
 
     get finalAmount() {
       return this.customAmount ? (parseInt(this.customAmount) || 0) : this.amount;
+    },
+    async init() {
+      if (window.__epcQr) {
+        this.qrUrl = await window.__epcQr(this.finalAmount);
+        this.$watch('finalAmount', async (amt) => {
+          this.qrUrl = await window.__epcQr(amt);
+        });
+      }
     },
     get autoDisplayName() {
       const parts = this.donorName.trim().split(' ');
@@ -134,6 +144,26 @@ document.addEventListener('alpine:init', () => {
     }
   }));
 });
+</script>
+
+<script>
+import QRCode from 'qrcode';
+window.__epcQr = (amount: number) => {
+  const amountStr = amount > 0 ? `EUR${Number(amount).toFixed(2)}` : 'EUR';
+  const payload = [
+    'BCD', '002', '1', 'SCT',
+    'COLSDE33XXX',
+    'Worldculture Empowerment e.V.',
+    'DE63370501981958894881',
+    amountStr, '', 'Velid',
+  ].join('\n');
+  return QRCode.toDataURL(payload, {
+    margin: 1,
+    errorCorrectionLevel: 'M',
+    color: { dark: '#2c2a26', light: '#f8f7f4' },
+    width: 176,
+  });
+};
 </script>
 
 <div
@@ -192,7 +222,7 @@ document.addEventListener('alpine:init', () => {
                     />
                     <div>
                         <p
-                            class="text-[12px] text-[#9e9a93] font-semibold uppercase tracking-[0.8px]"
+                            class="text-[12px] text-text-light font-semibold uppercase tracking-[0.8px]"
                         >
                             {t('stripe.donateTo')}
                         </p>
@@ -221,7 +251,7 @@ document.addEventListener('alpine:init', () => {
             <!-- Amount selector -->
             <div class="px-5 pb-4">
                 <p
-                    class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px] mb-2"
+                    class="text-[11px] font-semibold text-text-light uppercase tracking-[0.8px] mb-2"
                 >
                     {t('stripe.amount')}
                 </p>
@@ -236,7 +266,7 @@ document.addEventListener('alpine:init', () => {
                 </div>
                 <div class="relative">
                     <span
-                        class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-[#9e9a93] pointer-events-none"
+                        class="absolute left-3 top-1/2 -translate-y-1/2 text-[13px] text-text-light pointer-events-none"
                         >€</span
                     >
                     <input
@@ -254,11 +284,11 @@ document.addEventListener('alpine:init', () => {
             <!-- Payment method selector -->
             <div class="px-5 pb-4">
                 <p
-                    class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px] mb-2"
+                    class="text-[11px] font-semibold text-text-light uppercase tracking-[0.8px] mb-2"
                 >
                     {t('stripe.paymentMethod')}
                 </p>
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-4 gap-2">
                     <!-- Credit Card -->
                     <button
                         @click="paymentMethod = 'card'"
@@ -289,10 +319,6 @@ document.addEventListener('alpine:init', () => {
                         :class="paymentMethod === 'sepa_debit' ? 'bg-[#2c2a26] text-white border-[#2c2a26]' : 'bg-white text-text-mid border-[#d4d0c8] hover:border-[#a8a298]'"
                         class="py-3 px-2 rounded-[10px] border text-[11px] font-semibold transition-all flex flex-col items-center gap-1.5 relative"
                     >
-                        <span
-                            class="bg-[#e8f5e9] text-[#2e7d32] absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap transition-colors"
-                            >{t('stripe.cheapest')}</span
-                        >
                         <svg
                             width="20"
                             height="20"
@@ -336,15 +362,40 @@ document.addEventListener('alpine:init', () => {
                         </svg>
                         <span>{t('stripe.paypal')}</span>
                     </button>
+
+                    <!-- Bank Transfer -->
+                    <button
+                        @click="paymentMethod = 'bank'"
+                        :class="paymentMethod === 'bank' ? 'bg-[#2c2a26] text-white border-[#2c2a26]' : 'bg-white text-text-mid border-[#d4d0c8] hover:border-[#a8a298]'"
+                        class="py-3 px-2 rounded-[10px] border text-[11px] font-semibold transition-all flex flex-col items-center gap-1.5 relative"
+                    >
+                        <span
+                            class="bg-[#e8f5e9] text-[#2e7d32] absolute -top-2 left-1/2 -translate-x-1/2 text-[9px] font-bold px-1.5 py-0.5 rounded-full whitespace-nowrap transition-colors"
+                        >{t('bank.noFeesBadge')}</span>
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.8"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                            <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                        </svg>
+                        <span>{t('stripe.bankTransfer')}</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="h-px bg-[#f0ede8] mx-5 mb-4"></div>
+            <div class="h-px bg-[#f0ede8] mx-5 mb-4" x-show="paymentMethod !== 'bank'"></div>
 
             <!-- Donor listing section -->
-            <div class="px-5 pb-4">
+            <div class="px-5 pb-4" x-show="paymentMethod !== 'bank'">
                 <p
-                    class="text-[11px] font-semibold text-[#9e9a93] uppercase tracking-[0.8px] mb-3"
+                    class="text-[11px] font-semibold text-text-light uppercase tracking-[0.8px] mb-3"
                 >
                     {t('stripe.donorList')}
                 </p>
@@ -391,7 +442,7 @@ document.addEventListener('alpine:init', () => {
                         >
                             {t('stripe.showOnList')}
                         </p>
-                        <p class="text-[12px] text-[#9e9a93] mt-0.5">
+                        <p class="text-[12px] text-text-light mt-0.5">
                             {t('stripe.namePublic')}
                         </p>
                     </div>
@@ -413,7 +464,7 @@ document.addEventListener('alpine:init', () => {
                         x-model="displayName"
                         class="w-full px-3 py-2.5 rounded-[10px] border border-[#d4d0c8] text-[16px] text-[#2c2a26] placeholder:text-[#c4c0b8] focus:outline-none focus:border-[#2c2a26] transition-colors"
                     />
-                    <p class="text-[12px] text-[#9e9a93] mt-1.5 ml-0.5">
+                    <p class="text-[12px] text-text-light mt-1.5 ml-0.5">
                         {t('stripe.leaveEmpty')}
                         <span
                             class="text-text-mid font-medium"
@@ -425,7 +476,7 @@ document.addEventListener('alpine:init', () => {
             <div class="h-px bg-[#f0ede8] mx-5 mb-4"></div>
 
             <!-- Cover fees checkbox -->
-            <div class="px-5 pb-4">
+            <div class="px-5 pb-4" x-show="paymentMethod !== 'bank'">
                 <label
                     class="flex items-start gap-3 cursor-pointer select-none"
                 >
@@ -466,7 +517,7 @@ document.addEventListener('alpine:init', () => {
                                 class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full transition-colors tabular-nums"
                             ></span>
                         </p>
-                        <p class="text-[12px] text-[#9e9a93] mt-0.5">
+                        <p class="text-[12px] text-text-light mt-0.5">
                             {t('stripe.feesExplainShort').split('–')[0].trim()}
                         </p>
                     </div>
@@ -474,10 +525,10 @@ document.addEventListener('alpine:init', () => {
             </div>
 
             <!-- Fee info expandable -->
-            <div class="px-5 pb-4 -mt-1">
+            <div class="px-5 pb-4 -mt-1" x-show="paymentMethod !== 'bank'">
                 <button
                     @click="showFeeInfo = !showFeeInfo"
-                    class="flex items-center gap-1 text-[12px] text-[#9e9a93] hover:text-text-mid transition-colors select-none"
+                    class="flex items-center gap-1 text-[12px] text-text-light hover:text-text-mid transition-colors select-none"
                 >
                     <svg
                         width="12"
@@ -597,8 +648,8 @@ document.addEventListener('alpine:init', () => {
                 </div>
             </div>
 
-            <!-- Error message -->
-            <div x-show="error" x-cloak class="px-5 pb-3">
+            <!-- Error message (Stripe only) -->
+            <div x-show="error && paymentMethod !== 'bank'" x-cloak class="px-5 pb-3">
                 <p
                     class="text-[12px] text-red-500 bg-red-50 rounded-[8px] px-3 py-2"
                     x-text="error"
@@ -606,8 +657,8 @@ document.addEventListener('alpine:init', () => {
                 </p>
             </div>
 
-            <!-- Pay button -->
-            <div class="px-5 pb-7">
+            <!-- Pay button (Stripe methods) -->
+            <div class="px-5 pb-7" x-show="paymentMethod !== 'bank'">
                 <button
                     @click="pay()"
                     :disabled="processing || finalAmount < 1"
@@ -671,6 +722,45 @@ document.addEventListener('alpine:init', () => {
                             d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h4.25c0-1.85-1.07-2.58-2.08-2.58zM40.95 20.3c-1.44 0-2.32-.6-2.9-1.04l-.02 4.63-4.12.87V5.57h3.76l.08 1.02a4.7 4.7 0 0 1 3.23-1.29c2.9 0 5.62 2.6 5.62 7.4 0 5.23-2.7 7.6-5.65 7.6zM40 8.95c-.95 0-1.54.34-1.97.81l.02 6.12c.4.44.98.78 1.95.78 1.52 0 2.54-1.65 2.54-3.87 0-2.15-1.04-3.84-2.54-3.84zM28.24 5.57h4.13v14.44h-4.13V5.57zm0-4.7L32.37 0v3.36l-4.13.88V.88zm-4.32 9.35v9.79H19.8V5.57h3.7l.12 1.22c1-1.77 3.07-1.41 3.62-1.22v3.79c-.52-.17-2.29-.43-3.32.86zm-8.55 4.72c0 2.43 2.6 1.68 3.12 1.46v3.36c-.55.3-1.54.54-2.89.54a4.15 4.15 0 0 1-4.27-4.24l.01-13.17 4.02-.86v3.54h3.14V9.1h-3.13v5.85zm-4.91.7c0 2.97-2.31 4.66-5.73 4.66a11.2 11.2 0 0 1-4.46-.93v-3.93c1.38.75 3.1 1.31 4.46 1.31.92 0 1.53-.24 1.53-1C6.26 13.77 0 14.51 0 9.95 0 7.04 2.28 5.3 5.62 5.3c1.36 0 2.72.2 4.09.75v3.88a9.23 9.23 0 0 0-4.1-1.06c-.86 0-1.44.25-1.44.9 0 1.85 6.29.97 6.29 5.88z"
                             fill-rule="evenodd"></path></svg
                     >
+                </div>
+            </div>
+            <!-- Bank transfer details (shown when bank tile selected) -->
+            <div class="px-5 pb-7" x-show="paymentMethod === 'bank'" x-data="{ ibanCopied: false }">
+                <div class="bg-[#f8f7f4] rounded-[12px] p-4">
+                    <div class="flex items-start gap-4">
+                        <!-- Text details -->
+                        <div class="flex-1 space-y-3">
+                            <div class="space-y-2 text-[13px]">
+                                <div class="flex items-end justify-between gap-2">
+                                    <div>
+                                        <span class="text-[11px] text-text-light uppercase tracking-[0.6px] font-semibold block mb-0.5">{t('bank.iban')}</span>
+                                        <span class="font-mono font-semibold text-[#2c2a26] tracking-wide">DE63 3705 0198 1958 8948 81</span>
+                                    </div>
+                                    <button
+                                        @click="navigator.clipboard.writeText('DE63370501981958894881').then(() => { ibanCopied = true; setTimeout(() => ibanCopied = false, 2000) })"
+                                        class="flex-shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-md border border-[#d4d0c8] text-text-mid hover:border-[#a8a298] hover:text-text-mid transition-all"
+                                        x-text={`ibanCopied ? '${t('bank.copied')}' : '${t('bank.copy')}'`}
+                                    ></button>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-text-light uppercase tracking-[0.6px] font-semibold block mb-0.5">{t('bank.bic')}</span>
+                                    <span class="font-mono font-semibold text-[#2c2a26] tracking-wide">COLSDE33XXX</span>
+                                </div>
+                                <div>
+                                    <span class="text-[11px] text-text-light uppercase tracking-[0.6px] font-semibold block mb-0.5">{t('bank.reference')}</span>
+                                    <span class="font-semibold text-[#2c2a26]">Velid</span>
+                                </div>
+                            </div>
+                            <p class="text-[11px] text-text-light leading-relaxed border-t border-[#ece9e3] pt-3">
+                                {t('bank.donorListHint')}
+                            </p>
+                        </div>
+                        <!-- EPC QR code — desktop only -->
+                        <div class="hidden md:flex flex-col items-center gap-1.5 flex-shrink-0">
+                            <img :src="qrUrl" class="w-[88px] h-[88px] rounded-[8px]" alt="EPC QR Code" />
+                            <span class="text-[10px] text-[#b0acaa] font-medium text-center">{t('bank.qrScan')}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div><!-- end scrollable inner -->

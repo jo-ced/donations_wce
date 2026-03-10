@@ -39,7 +39,7 @@ const alternatePaths = getAlternatePaths(currentPath, lang);
         </a>
 
         <!-- Language switcher -->
-        <div class="flex items-center rounded-[6px] border border-border overflow-hidden text-[12px] font-semibold">
+        <div class="flex items-center rounded-md border border-border overflow-hidden text-[12px] font-semibold">
             {Object.entries(languages).map(([l, label]) => (
                 <a
                     href={alternatePaths[l as Lang]}
