@@ -44,6 +44,14 @@ export const POST: APIRoute = async ({ request }) => {
     const method = ['card', 'sepa_debit', 'paypal'].includes(paymentMethod) ? paymentMethod : 'sepa_debit';
     const finalCents = coverFees ? withCoveredFees(baseCents, method) : baseCents;
 
+    const isEn = lang === 'en';
+    const productName = isEn
+      ? "Donation — Velid's Dream of Hearing"
+      : 'Spende — Velids Traum vom Hören';
+    const submitMessage = isEn
+      ? 'Your donation goes directly to Velid.'
+      : 'Ihre Spende geht direkt an Velid.';
+
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       payment_method_types: PAYMENT_METHOD_TYPES[method] ?? ['sepa_debit'],
@@ -53,7 +61,7 @@ export const POST: APIRoute = async ({ request }) => {
             currency: 'eur',
             unit_amount: finalCents,
             product_data: {
-              name: 'Spende — Velids Traum vom Hören',
+              name: productName,
             },
           },
           quantity: 1,

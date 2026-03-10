@@ -21,9 +21,9 @@ const items = [
         type: "image" as const,
         src: `${basePath}/images/dream-of-hearing-3.webp`,
     },
-    { type: "video" as const, src: `${externalVideoBase}/video1.mp4` },
-    { type: "video" as const, src: `${externalVideoBase}/video2.mp4` },
-    { type: "video" as const, src: `${externalVideoBase}/video3.mp4` },
+    { type: "video" as const, src: `${externalVideoBase}/video1.mp4`, aspectRatio: "3/4" },
+    { type: "video" as const, src: `${externalVideoBase}/video2.mp4`, aspectRatio: "3/4" },
+    { type: "video" as const, src: `${externalVideoBase}/video3.mp4`, aspectRatio: "3/4" },
 ];
 ---
 
@@ -40,14 +40,20 @@ const items = [
                             loading={i === 0 ? "eager" : "lazy"}
                         />
                     ) : (
-                        <video
-                            src={item.src}
-                            class="gallery-media"
-                            playsinline
-                            loop
-                            preload={i <= 1 ? "metadata" : "none"}
-                            data-gallery-video
-                        />
+                        <>
+                            <video
+                                src={item.src}
+                                class="gallery-media"
+                                style={`aspect-ratio: ${item.aspectRatio}`}
+                                playsinline
+                                loop
+                                preload="none"
+                                data-gallery-video
+                            />
+                            <div class="video-loader" aria-hidden="true" hidden>
+                                <div class="video-loader-spinner"></div>
+                            </div>
+                        </>
                     )}
                 </div>
             ))
@@ -330,6 +336,56 @@ const items = [
         width: 6px;
         height: 6px;
     }
+
+    .video-placeholder {
+        position: relative;
+        width: 100%;
+        background: linear-gradient(160deg, #1e1c1a 0%, #2a2724 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .video-placeholder-icon {
+        width: 64px;
+        height: 64px;
+    }
+
+    .gallery-media[data-gallery-video] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .video-loader {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.25);
+        z-index: 5;
+    }
+
+    .video-loader[hidden] {
+        display: none;
+    }
+
+    .video-loader-spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: gallery-spin 0.8s linear infinite;
+    }
+
+    @keyframes gallery-spin {
+        to { transform: rotate(360deg); }
+    }
 </style>
 
 <script>
@@ -412,8 +468,17 @@ const items = [
                 track.querySelectorAll("video").forEach((v) => v.pause());
                 const currentSlide = track.children[index] as HTMLElement;
                 const video = currentSlide?.querySelector("video");
+                const loader = currentSlide?.querySelector<HTMLElement>(".video-loader");
                 if (video) {
                     applyMute(video);
+                    if (loader) {
+                        if (video.readyState < 3) {
+                            loader.hidden = false;
+                            video.addEventListener("canplay", () => { loader.hidden = true; }, { once: true });
+                        } else {
+                            loader.hidden = true;
+                        }
+                    }
                     video.play().catch(() => {});
                 }
 
@@ -478,10 +543,11 @@ const items = [
                     img.addEventListener("load", syncHeight, { once: true });
             });
             track.querySelectorAll("video").forEach((video) => {
-                if (!video.videoHeight)
-                    video.addEventListener("loadedmetadata", syncHeight, {
-                        once: true,
-                    });
+                video.addEventListener("loadedmetadata", () => {
+                    // Let the real video dimensions take over from the CSS placeholder ratio
+                    video.style.aspectRatio = "";
+                    syncHeight();
+                }, { once: true });
             });
 
             // Sync height on window resize
@@ -490,5 +556,14 @@ const items = [
             // Initial state
             updateUI(0);
             syncHeight();
+
+            // Prefetch first video after everything else has loaded
+            window.addEventListener("load", () => {
+                const firstVideo = track.querySelector<HTMLVideoElement>("video");
+                if (firstVideo) {
+                    firstVideo.preload = "auto";
+                    firstVideo.load();
+                }
+            }, { once: true });
         });
 </script>

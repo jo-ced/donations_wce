@@ -17,6 +17,8 @@ const t = useTranslations(lang);
     x-data={`{
         raised: 0,
         goal: ${goal},
+        mealPrice: 20,
+        mealsRemaining: Math.max(0, Math.ceil(${goal} / 20)),
         countUp(target) {
             const duration = 1200;
             const start = performance.now();
@@ -24,6 +26,7 @@ const t = useTranslations(lang);
                 const t = Math.min((now - start) / duration, 1);
                 const ease = 1 - Math.pow(1 - t, 3);
                 this.raised = Math.round(ease * target);
+                this.mealsRemaining = Math.max(0, Math.ceil((this.goal - this.raised) / this.mealPrice));
                 if (t < 1) requestAnimationFrame(step);
             };
             requestAnimationFrame(step);
@@ -52,4 +55,8 @@ const t = useTranslations(lang);
         >
         </div>
     </div>
+    <p class="text-sm text-text-mid mt-2 font-normal">
+        {t('progress.mealsRemaining').split('{n}')[0]}<span class="font-medium text-text" x-text="mealsRemaining.toLocaleString()">1.000</span>{t('progress.mealsRemaining').split('{n}')[1]}
+    </p>
+
 </section>

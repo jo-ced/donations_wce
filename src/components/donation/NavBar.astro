@@ -1,6 +1,8 @@
 ---
 import { languages } from '../../i18n/ui';
 import { useTranslations, getAlternatePaths, type Lang } from '../../i18n/utils';
+import Logo from '../Logo.astro';
+
 
 interface Props {
     lang: Lang;
@@ -16,16 +18,7 @@ const alternatePaths = getAlternatePaths(currentPath, lang);
 <nav
     class="flex justify-between items-center px-5 py-2.5 border-b border-border"
 >
-    <div class="flex items-center gap-2.5">
-        <img
-            src="/dream-of-hearing/images/logo/wce-logo.webp"
-            alt={t('nav.siteName')}
-            class="h-12 w-auto"
-        />
-        <span class="hidden lg:block text-sm font-semibold text-text-mid"
-            >{t('nav.siteName')}</span
-        >
-    </div>
+    <Logo lang={lang} />
     <div class="flex items-center gap-2">
 
         <!-- Link to WCE -->

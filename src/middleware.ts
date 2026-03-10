@@ -14,6 +14,17 @@ export const onRequest = defineMiddleware((context, next) => {
 
   if (isAsset) return next();
 
+  if (pathname === '/') {
+    const acceptLang = context.request.headers.get('accept-language') ?? '';
+    const detected = acceptLang
+      .split(',')
+      .map(s => s.split(';')[0].trim().slice(0, 2).toLowerCase())
+      .find(l => SUPPORTED.includes(l));
+    const lang = detected ?? DEFAULT;
+    const prefix = lang !== DEFAULT ? `/${lang}` : '';
+    return context.redirect(`${prefix}/projekte/dream-of-hearing`, 301);
+  }
+
   const [, first] = pathname.split('/');
   const hasLangPrefix = SUPPORTED.includes(first);
 

@@ -24,6 +24,7 @@ export const ui = {
     // Progress
     'progress.of': 'von',
     'progress.thousands': 'T',
+    'progress.mealsRemaining': '🍽️ Noch {n} Abendessen für ein neues Leben.',
 
     // Story
     'story.readMore': 'Mehr lesen',
@@ -53,7 +54,7 @@ export const ui = {
     'stripe.creditCard': 'Kreditkarte',
     'stripe.directDebit': 'Lastschrift',
     'stripe.paypal': 'PayPal',
-    'stripe.cheapest': 'Am meisten kommt an',
+    'stripe.cheapest': 'Am Günstigsten',
     'stripe.donorList': 'Spenderliste',
     'stripe.yourName': 'Ihr Name',
     'stripe.showOnList': 'Meinen Namen in der Spendenliste anzeigen',
@@ -90,9 +91,10 @@ export const ui = {
     'donations.disclaimer': 'Es werden nur Spender angezeigt, die der Namensveröffentlichung zugestimmt haben',
 
     // Bank transfer
+    'bank.recipient': 'Empfänger',
+    'bank.recipientName': 'Worldculture Empowerment e.V.',
     'bank.title': 'Oder per Banküberweisung',
-    'bank.noFees': '0 % Gebühren – 100 % kommt an',
-    'bank.noFeesBadge': 'Keine Gebühren',
+    'bank.fee': '0,60 €',
     'bank.iban': 'IBAN',
     'bank.bic': 'BIC',
     'bank.reference': 'Verwendungszweck',
@@ -132,6 +134,7 @@ export const ui = {
     // Progress
     'progress.of': 'of',
     'progress.thousands': 'K',
+    'progress.mealsRemaining': '🍽️ {n} more dinners for a new life.',
 
     // Story
     'story.readMore': 'Read More',
@@ -178,7 +181,7 @@ export const ui = {
     'stripe.sepa': 'SEPA Direct Debit',
     'stripe.feeExample': 'Example: With <strong class="text-[#2c2a26]">€25</strong> via PayPal, only <strong class="text-[#2c2a26]">€24.03</strong> arrives without fee coverage – with coverage the full <strong class="text-[#2c2a26]">€25.00</strong>.',
     'stripe.bankTransfer': 'Bank Transfer',
-    'stripe.donateButton': '€ Donation',
+    'stripe.donateButton': '€ Donate',
     'stripe.redirecting': 'Redirecting to Stripe…',
     'stripe.securePayment': 'Secure payment via',
     'stripe.errorGeneric': 'An error occurred.',
@@ -198,9 +201,10 @@ export const ui = {
     'donations.disclaimer': 'Only donors who have consented to name publication are displayed',
 
     // Bank transfer
+    'bank.recipient': 'Recipient',
+    'bank.recipientName': 'Worldculture Empowerment e.V.',
     'bank.title': 'Or by Bank Transfer',
-    'bank.noFees': '0% Fees – 100% Reaches Recipient',
-    'bank.noFeesBadge': 'No Fees',
+    'bank.fee': '€0.60',
     'bank.iban': 'IBAN',
     'bank.bic': 'BIC',
     'bank.reference': 'Reference',
