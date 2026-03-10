@@ -27,9 +27,10 @@ const PAYMENT_METHOD_TYPES: Record<string, Stripe.Checkout.SessionCreateParams.P
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    const host = request.headers.get('x-forwarded-host') ?? request.headers.get('host') ?? '';
-    const proto = request.headers.get('x-forwarded-proto') ?? 'https';
-    const siteUrl = `${proto}://${host}`;
+    const forwardedHost = request.headers.get('x-forwarded-host');
+    const siteUrl = forwardedHost
+      ? `${request.headers.get('x-forwarded-proto') ?? 'https'}://${forwardedHost}`
+      : new URL(request.url).origin;
     const body = await request.json();
     const { amount, donorName, showOnList, displayName, coverFees, paymentMethod = 'sepa_debit', lang } = body;
     const langPrefix = lang === 'en' ? '/en' : '';
