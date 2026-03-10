@@ -4,7 +4,6 @@ import type { APIRoute } from 'astro';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(import.meta.env.STRIPE_SECRET_KEY);
-const siteUrl = import.meta.env.PUBLIC_SITE_URL;
 
 // Fee structures per payment method
 function withCoveredFees(baseCents: number, method: string): number {
@@ -28,6 +27,7 @@ const PAYMENT_METHOD_TYPES: Record<string, Stripe.Checkout.SessionCreateParams.P
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    const siteUrl = new URL(request.url).origin;
     const body = await request.json();
     const { amount, donorName, showOnList, displayName, coverFees, paymentMethod = 'sepa_debit', lang } = body;
     const langPrefix = lang === 'en' ? '/en' : '';
